@@ -133,6 +133,7 @@ linters-settings:
           - $all
         allow:
           - $gostd
+          - "github.com/Vilinvil/task_messaggio"
         deny:
           - pkg: "github.com/pkg/errors"
             desc: Should be replaced by standard lib errors package
