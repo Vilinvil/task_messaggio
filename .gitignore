@@ -1,0 +1,8 @@
+# IDE folders
+.idea
+
+# Binaries
+bin
+
+# Env
+**.env/
