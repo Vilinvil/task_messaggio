@@ -33,3 +33,7 @@ func (e *Error) Error() string {
 func (e *Error) Status() int {
 	return e.status
 }
+
+func (e *Error) IsClientError() bool {
+	return e.status >= http.StatusBadRequest && e.status < http.StatusInternalServerError
+}

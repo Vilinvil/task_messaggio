@@ -7,13 +7,15 @@ import (
 const (
 	EnvOutputLogPath      = "OUTPUT_LOG_PATH"
 	EnvErrorOutputLogPath = "ERROR_OUTPUT_LOG_PATH"
-	EnvBasicTimeout
-	EnvURLDataBase = "URL_DATABASE"
-	EnvAPIName     = "API_NAME"
+	EnvBasicTimeout       = "BASIC_TIMEOUT"
+	EnvURLDataBase        = "URL_DATABASE"
+	EnvAPIName            = "API_NAME"
+	EnvProductionMode     = "PRODUCTION_MODE"
 
-	StandardBasicTimeout = "10"
-	StandardURLDataBase  = "postgres://username:wrongpassword@localhost:5432/dbname?sslmode=disable"
-	StandardAPIName      = "/api/v1"
+	StandardBasicTimeout   = "10"
+	StandardURLDataBase    = "postgres://username:wrongpassword@localhost:5432/dbname?sslmode=disable"
+	StandardAPIName        = "/api/v1"
+	StandardProductionMode = false
 )
 
 func GetEnvStr(envName string, standardValue string) string {
@@ -23,4 +25,13 @@ func GetEnvStr(envName string, standardValue string) string {
 	}
 
 	return result
+}
+
+func GetEnvBool(envName string, standardValue bool) bool {
+	result, ok := os.LookupEnv(envName)
+	if !ok {
+		return standardValue
+	}
+
+	return result == "true"
 }

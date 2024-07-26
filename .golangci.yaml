@@ -134,6 +134,10 @@ linters-settings:
         allow:
           - $gostd
           - "github.com/Vilinvil/task_messaggio"
+          - "github.com/go-park-mail-ru/2023_2_Rabotyagi"
+          - "github.com/google/uuid"
+          - "github.com/jackc/pgx/v5"
+          - "github.com/jackc/pgx/v5/pgxpool"
         deny:
           - pkg: "github.com/pkg/errors"
             desc: Should be replaced by standard lib errors package

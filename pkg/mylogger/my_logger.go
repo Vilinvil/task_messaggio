@@ -29,15 +29,24 @@ func NewNop() *MyLogger {
 	return &MyLogger{logger}
 }
 
-func New(outputPaths []string, errorOutputPaths []string, options ...zap.Option) (*MyLogger, error) {
+func New(outputPaths []string, errorOutputPaths []string,
+	productionMode bool, options ...zap.Option,
+) (*MyLogger, error) {
 	var err error
 
 	once.Do(func() {
-		cfg := zap.NewProductionConfig()
-		cfg.OutputPaths = outputPaths
-		cfg.ErrorOutputPaths = errorOutputPaths
+		var config zap.Config
 
-		zapLogger, innerErr := cfg.Build(options...)
+		if productionMode {
+			config = zap.NewProductionConfig()
+		} else {
+			config = zap.NewDevelopmentConfig()
+		}
+
+		config.OutputPaths = outputPaths
+		config.ErrorOutputPaths = errorOutputPaths
+
+		zapLogger, innerErr := config.Build(options...)
 		if innerErr != nil {
 			err = innerErr
 

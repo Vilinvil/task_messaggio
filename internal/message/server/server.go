@@ -3,11 +3,11 @@ package server
 import (
 	"context"
 	"fmt"
-	"github.com/Vilinvil/task_messaggio/internal/message/server/delivery"
 	"net/http"
 	"strings"
 
 	"github.com/Vilinvil/task_messaggio/internal/message/config"
+	"github.com/Vilinvil/task_messaggio/internal/message/server/delivery"
 	"github.com/Vilinvil/task_messaggio/pkg/myerrors"
 	"github.com/Vilinvil/task_messaggio/pkg/mylogger"
 )
@@ -16,18 +16,18 @@ type Server struct {
 	httpServer *http.Server
 }
 
-func (s *Server) Run(config *config.Config) (err error) {
+func (s *Server) Run(config *config.Config) error {
 	baseCtx := context.Background()
 
 	logger, err := mylogger.New(strings.Split(config.OutputLogPath, " "),
-		strings.Split(config.ErrorOutputLogPath, " "))
+		strings.Split(config.ErrorOutputLogPath, " "), config.ProductionMode)
 	if err != nil {
 		return fmt.Errorf(myerrors.ErrTemplate, err)
 	}
 
-	defer logger.Sync()
+	defer logger.Sync() //nolint:errcheck
 
-	mux, err := delivery.NewMux(baseCtx, logger)
+	mux, err := delivery.NewMux(baseCtx, config.URLDataBase, logger)
 	if err != nil {
 		return fmt.Errorf(myerrors.ErrTemplate, err)
 	}

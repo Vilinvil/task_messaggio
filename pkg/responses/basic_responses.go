@@ -1,6 +1,7 @@
 package responses
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/Vilinvil/task_messaggio/pkg/myerrors"
@@ -51,4 +52,17 @@ func NewResponseSuccessful(body string) *ResponseSuccessful {
 
 func (r *ResponseSuccessful) Status() int {
 	return r.status
+}
+
+func SendErrResponse(w http.ResponseWriter, logger *mylogger.MyLogger, err error) {
+	w.Header().Set("Content-Type", "application/json")
+
+	myErr := &myerrors.Error{} //nolint:exhaustruct
+	if errors.As(err, &myErr) && myErr.IsClientError() {
+		SendResponse(w, logger, myErr)
+
+		return
+	}
+
+	SendResponse(w, logger, myerrors.ErrInternalServer)
 }

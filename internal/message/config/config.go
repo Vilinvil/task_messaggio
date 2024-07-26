@@ -18,10 +18,11 @@ const (
 )
 
 type Config struct {
+	ProductionMode     bool
+	BasicTimeout       time.Duration
 	Port               string
 	OutputLogPath      string
 	ErrorOutputLogPath string
-	BasicTimeout       time.Duration
 	URLDataBase        string
 	APIName            string
 }
@@ -35,10 +36,11 @@ func New() (*Config, error) {
 	basicTimeout := time.Duration(timeoutInSecond) * time.Second
 
 	return &Config{
+		ProductionMode:     config.GetEnvBool(config.EnvProductionMode, config.StandardProductionMode),
+		BasicTimeout:       basicTimeout,
 		Port:               config.GetEnvStr(EnvPort, StandardPort),
 		OutputLogPath:      config.GetEnvStr(config.EnvOutputLogPath, StandardOutputLogPath),
 		ErrorOutputLogPath: config.GetEnvStr(config.EnvErrorOutputLogPath, StandardErrorOutputLogPath),
-		BasicTimeout:       basicTimeout,
 		URLDataBase:        config.GetEnvStr(config.EnvURLDataBase, config.StandardURLDataBase),
 		APIName:            config.GetEnvStr(config.EnvAPIName, config.StandardAPIName),
 	}, nil
