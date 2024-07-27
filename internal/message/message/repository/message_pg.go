@@ -78,3 +78,19 @@ func (m *MessagePg) AddMessage(ctx context.Context, preMessage *models.PreMessag
 
 	return nil
 }
+
+func (m *MessagePg) GetMessageStatistic(ctx context.Context) (*models.MessageStatistic, error) {
+	logger := m.logger.EnrichReqID(ctx)
+
+	SQLGetMessageStatistic := `SELECT total, handled FROM public."counter_message"`
+	messageStatistic := new(models.MessageStatistic)
+	err := m.pool.QueryRow(ctx, SQLGetMessageStatistic).Scan(
+		&messageStatistic.Total, &messageStatistic.Handled)
+	if err != nil {
+		logger.Error(err)
+
+		return nil, fmt.Errorf(myerrors.ErrTemplate, err)
+	}
+
+	return messageStatistic, nil
+}

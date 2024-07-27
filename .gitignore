@@ -6,3 +6,6 @@ bin
 
 # Env
 **.env/
+
+# Generated files
+**_easyjson.go

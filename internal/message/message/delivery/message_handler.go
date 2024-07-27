@@ -2,6 +2,7 @@ package delivery
 
 import (
 	"context"
+	"github.com/Vilinvil/task_messaggio/pkg/models"
 	"io"
 	"net/http"
 	"net/url"
@@ -18,6 +19,7 @@ var _ MessageService = (*usecases.MessageService)(nil)
 type MessageService interface {
 	//GetMessagesByID(id ...int) ([]*models.Message, error)
 	//ChangeStatusMessagesByID(status string, id ...int) error
+	GetMessageStatistic(ctx context.Context) (*models.MessageStatistic, error)
 	AddMessage(ctx context.Context, value string) (messageUUID uuid.UUID, err error)
 }
 
@@ -80,4 +82,27 @@ func (m *MessageHandler) AddMessage(w http.ResponseWriter, r *http.Request) {
 	logger.Debugf("Message added: %s", messageUUID)
 
 	responses.SendResponse(w, logger, ResponseMessageAddSuccessful)
+}
+
+// GetMessageStatistic godoc
+//
+//	@Summary посмотреть статистику по сообщениям
+//	@Tags message
+//	@Produce    json
+//	@Success    200  {object} models.MessageStatistic
+//	@Failure    405  {string} string
+//	@Failure    500  {string} string
+//	@Router      /message/statistic [get]
+func (m *MessageHandler) GetMessageStatistic(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	logger := m.logger.EnrichReqID(ctx)
+
+	statistic, err := m.service.GetMessageStatistic(ctx)
+	if err != nil {
+		responses.SendErrResponse(w, logger, err)
+
+		return
+	}
+
+	responses.SendResponse(w, logger, models.NewResponseMessageStatistic(http.StatusOK, statistic))
 }

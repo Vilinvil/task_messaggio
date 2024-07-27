@@ -15,6 +15,7 @@ import (
 var _ MessageRepository = (*repository.MessagePg)(nil)
 
 type MessageRepository interface {
+	GetMessageStatistic(ctx context.Context) (*models.MessageStatistic, error)
 	AddMessage(ctx context.Context, preMessage *models.PreMessage) error
 }
 
@@ -48,4 +49,8 @@ func (m *MessageService) AddMessage(ctx context.Context, value string) (uuid.UUI
 	}
 
 	return preMessage.ID, nil
+}
+
+func (m *MessageService) GetMessageStatistic(ctx context.Context) (*models.MessageStatistic, error) {
+	return m.repository.GetMessageStatistic(ctx)
 }

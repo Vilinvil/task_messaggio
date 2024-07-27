@@ -17,7 +17,7 @@ type Message struct {
 	UpdatedAt time.Time
 }
 
-var ErrLenMessage = myerrors.NewBadRequestError("Длина сообщения не может быть больше 4000 символов utf8")
+var ErrLenMessage = myerrors.NewBadRequestError("Длина сообщения должна быть больше 0 и меньше 4000 символов utf8")
 
 type PreMessage struct {
 	ID    uuid.UUID
@@ -34,7 +34,7 @@ func NewPreMessage(value string) *PreMessage {
 const maxLenValueMessage = 4000
 
 func (p *PreMessage) Validate() error {
-	if utf8.RuneCountInString(p.Value) > maxLenValueMessage {
+	if len(p.Value) == 0 || utf8.RuneCountInString(p.Value) > maxLenValueMessage {
 		return ErrLenMessage
 	}
 

@@ -1,5 +1,12 @@
 basePath: /api/v1
 definitions:
+  models.MessageStatistic:
+    properties:
+      handled:
+        type: integer
+      total:
+        type: integer
+    type: object
   myerrors.Error:
     properties:
       err:
@@ -51,6 +58,26 @@ paths:
           schema:
             type: string
       summary: добавить сообщение в систему
+      tags:
+      - message
+  /message/statistic:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.MessageStatistic'
+        "405":
+          description: Method Not Allowed
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: посмотреть статистику по сообщениям
       tags:
       - message
 securityDefinitions:

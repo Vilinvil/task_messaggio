@@ -33,6 +33,7 @@ func NewMux(ctx context.Context, urlDataBase string, logger *mylogger.MyLogger) 
 
 	router.HandleFunc("GET /healthcheck", delivery.HealthCheckHandler)
 	router.HandleFunc("POST /message", messageHandler.AddMessage)
+	router.HandleFunc("GET /message/statistic", messageHandler.GetMessageStatistic)
 
 	mux := http.NewServeMux()
 	mux.Handle("/", mymiddleware.Panic(middleware.Context(ctx,

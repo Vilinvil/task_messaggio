@@ -4,7 +4,7 @@ lint:
 
 .PHONY: easyjson
 easyjson:
-	easyjson pkg/myerrors/my_errors.go pkg/responses/basic_responses.go
+	easyjson pkg/myerrors/my_errors.go pkg/responses/basic_responses.go pkg/models/counter_message.go
 
 .PHONY: create-migration
 create-migration:
