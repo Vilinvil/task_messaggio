@@ -2,36 +2,35 @@ package delivery
 
 import (
 	"context"
-	"github.com/Vilinvil/task_messaggio/pkg/models"
 	"io"
 	"net/http"
 	"net/url"
 
 	"github.com/Vilinvil/task_messaggio/internal/message/message/usecases"
+	"github.com/Vilinvil/task_messaggio/pkg/models"
 	"github.com/Vilinvil/task_messaggio/pkg/mylogger"
 	"github.com/Vilinvil/task_messaggio/pkg/responses"
-
 	"github.com/google/uuid"
 )
 
 var _ MessageService = (*usecases.MessageService)(nil)
 
 type MessageService interface {
-	//GetMessagesByID(id ...int) ([]*models.Message, error)
-	//ChangeStatusMessagesByID(status string, id ...int) error
 	GetMessageStatistic(ctx context.Context) (*models.MessageStatistic, error)
 	AddMessage(ctx context.Context, value string) (messageUUID uuid.UUID, err error)
 }
 
 type MessageHandler struct {
-	service MessageService
-	logger  *mylogger.MyLogger
+	messageService MessageService
+	logger         *mylogger.MyLogger
 }
 
-func NewMessageHandler(service MessageService, logger *mylogger.MyLogger) *MessageHandler {
+func NewMessageHandler(service MessageService,
+	logger *mylogger.MyLogger,
+) *MessageHandler {
 	return &MessageHandler{
-		service: service,
-		logger:  logger,
+		messageService: service,
+		logger:         logger,
 	}
 }
 
@@ -72,7 +71,7 @@ func (m *MessageHandler) AddMessage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	messageUUID, err := m.service.AddMessage(ctx, valueMessage)
+	messageUUID, err := m.messageService.AddMessage(ctx, valueMessage)
 	if err != nil {
 		responses.SendErrResponse(w, logger, err)
 
@@ -97,7 +96,7 @@ func (m *MessageHandler) GetMessageStatistic(w http.ResponseWriter, r *http.Requ
 	ctx := r.Context()
 	logger := m.logger.EnrichReqID(ctx)
 
-	statistic, err := m.service.GetMessageStatistic(ctx)
+	statistic, err := m.messageService.GetMessageStatistic(ctx)
 	if err != nil {
 		responses.SendErrResponse(w, logger, err)
 

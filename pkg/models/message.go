@@ -5,7 +5,6 @@ import (
 	"unicode/utf8"
 
 	"github.com/Vilinvil/task_messaggio/pkg/myerrors"
-
 	"github.com/google/uuid"
 )
 
@@ -19,13 +18,13 @@ type Message struct {
 
 var ErrLenMessage = myerrors.NewBadRequestError("Длина сообщения должна быть больше 0 и меньше 4000 символов utf8")
 
-type PreMessage struct {
+type MessagePayload struct {
 	ID    uuid.UUID
 	Value string
 }
 
-func NewPreMessage(value string) *PreMessage {
-	return &PreMessage{
+func NewMessagePayload(value string) *MessagePayload {
+	return &MessagePayload{
 		ID:    uuid.New(),
 		Value: value,
 	}
@@ -33,7 +32,7 @@ func NewPreMessage(value string) *PreMessage {
 
 const maxLenValueMessage = 4000
 
-func (p *PreMessage) Validate() error {
+func (p *MessagePayload) Validate() error {
 	if len(p.Value) == 0 || utf8.RuneCountInString(p.Value) > maxLenValueMessage {
 		return ErrLenMessage
 	}

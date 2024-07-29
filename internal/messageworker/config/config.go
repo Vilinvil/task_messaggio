@@ -8,40 +8,36 @@ import (
 )
 
 const (
-	EnvPort = "PORT"
+	EnvTimeOnTask = "TIME_ON_TASK"
 
-	StandardPort               = "8090"
-	StandardOutputLogPath      = "stdout /var/log/message/logs.json"
-	StandardErrorOutputLogPath = "stderr /var/log/message/err_logs.json"
+	StandardOutputLogPath      = "stdout /var/log/message_worker/logs.json"
+	StandardErrorOutputLogPath = "stderr /var/log/message_worker/err_logs.json"
+	StandardTimeOnTask         = "10"
 )
 
 type Config struct {
 	ProductionMode     bool
-	BasicTimeout       time.Duration
-	Port               string
+	TimeOnTask         time.Duration
 	OutputLogPath      string
 	ErrorOutputLogPath string
 	URLDataBase        string
-	APIName            string
 	BrokerAddr         string
 }
 
 func New() (*Config, error) {
-	timeoutInSecond, err := strconv.Atoi(config.GetEnvStr(config.EnvBasicTimeout, config.StandardBasicTimeout))
+	timeOnTaskInSecond, err := strconv.Atoi(config.GetEnvStr(EnvTimeOnTask, StandardTimeOnTask))
 	if err != nil {
 		return nil, err
 	}
 
-	basicTimeout := time.Duration(timeoutInSecond) * time.Second
+	timeOnTask := time.Duration(timeOnTaskInSecond) * time.Second
 
 	return &Config{
 		ProductionMode:     config.GetEnvBool(config.EnvProductionMode, config.StandardProductionMode),
-		BasicTimeout:       basicTimeout,
-		Port:               config.GetEnvStr(EnvPort, StandardPort),
+		TimeOnTask:         timeOnTask,
 		OutputLogPath:      config.GetEnvStr(config.EnvOutputLogPath, StandardOutputLogPath),
 		ErrorOutputLogPath: config.GetEnvStr(config.EnvErrorOutputLogPath, StandardErrorOutputLogPath),
 		URLDataBase:        config.GetEnvStr(config.EnvURLDataBase, config.StandardURLDataBase),
-		APIName:            config.GetEnvStr(config.EnvAPIName, config.StandardAPIName),
 		BrokerAddr:         config.GetEnvStr(config.EnvBrokerAddr, config.StandardBrokerAddr),
 	}, nil
 }

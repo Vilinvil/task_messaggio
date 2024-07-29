@@ -9,13 +9,19 @@ services:
     ports:
       - "5432:5432"
     healthcheck:
-      test: "pg_isready -u postgres -d postgres"
+      test: "pg_isready -U $${POSTGRES_USER}"
       interval: 15s
-      timeout: 30s
+      timeout: 10s
       retries: 5
-      start_period: 15s
     volumes:
       - postgres:/var/lib/postgresql/data
+  kafka:
+    depends_on:
+      postgres:
+        condition: service_healthy
+    image: apache/kafka:3.7.1
+    ports:
+      - "9092:9092"
 
 volumes:
   postgres:

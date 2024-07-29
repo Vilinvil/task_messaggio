@@ -6,7 +6,6 @@ import (
 	"sync"
 
 	"github.com/Vilinvil/task_messaggio/pkg/myerrors"
-
 	"go.uber.org/zap"
 )
 
@@ -67,7 +66,7 @@ func Get() (*MyLogger, error) {
 	if logger == nil {
 		fmt.Println(ErrNoLogger)
 
-		return nil, fmt.Errorf(myerrors.ErrTemplate, ErrNoLogger)
+		return nil, ErrNoLogger
 	}
 
 	return &MyLogger{logger}, nil

@@ -2,38 +2,43 @@ package delivery
 
 import (
 	"context"
-	"fmt"
+	"github.com/Vilinvil/task_messaggio/internal/message/message/repository"
 	"net/http"
 
+	// /docs - need for handler with swagger documentations
+	_ "github.com/Vilinvil/task_messaggio/docs"
 	messagedelivery "github.com/Vilinvil/task_messaggio/internal/message/message/delivery"
-	repository2 "github.com/Vilinvil/task_messaggio/internal/message/message/repository"
 	"github.com/Vilinvil/task_messaggio/internal/message/message/usecases"
 	"github.com/Vilinvil/task_messaggio/pkg/delivery"
 	mymiddleware "github.com/Vilinvil/task_messaggio/pkg/middleware"
-	"github.com/Vilinvil/task_messaggio/pkg/myerrors"
 	"github.com/Vilinvil/task_messaggio/pkg/mylogger"
 
 	"github.com/go-park-mail-ru/2023_2_Rabotyagi/pkg/middleware"
-	"github.com/go-park-mail-ru/2023_2_Rabotyagi/pkg/repository"
+	httpSwagger "github.com/swaggo/http-swagger/v2"
 )
 
-func NewMux(ctx context.Context, urlDataBase string, logger *mylogger.MyLogger) (http.Handler, error) {
+func NewMux(ctx context.Context, urlDataBase, brokerAddr string, logger *mylogger.MyLogger) (http.Handler, error) {
 	router := http.NewServeMux()
 
-	pool, err := repository.NewPgxPool(ctx, urlDataBase)
+	messagePg, err := repository.NewMessagePg(ctx, urlDataBase, logger)
 	if err != nil {
-		return nil, fmt.Errorf(myerrors.ErrTemplate, err)
+		return nil, err
 	}
 
-	messagePg := repository2.NewMessagePg(pool, logger)
+	brokerMessage, err := repository.NewBrokerMessageKafka(brokerAddr, logger)
+	if err != nil {
+		return nil, err
+	}
 
-	messageService := usecases.NewMessageService(messagePg, logger)
+	messageService := usecases.NewMessageService(messagePg, brokerMessage, logger)
 
 	messageHandler := messagedelivery.NewMessageHandler(messageService, logger)
 
 	router.HandleFunc("GET /healthcheck", delivery.HealthCheckHandler)
 	router.HandleFunc("POST /message", messageHandler.AddMessage)
 	router.HandleFunc("GET /message/statistic", messageHandler.GetMessageStatistic)
+
+	router.HandleFunc("GET /swagger/", httpSwagger.Handler())
 
 	mux := http.NewServeMux()
 	mux.Handle("/", mymiddleware.Panic(middleware.Context(ctx,

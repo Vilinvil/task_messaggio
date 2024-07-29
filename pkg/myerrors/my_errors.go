@@ -4,10 +4,6 @@ import "net/http"
 
 var ErrInternalServer = NewInternalServerError("Внутренняя ошибка на сервере")
 
-const (
-	ErrTemplate = "%w"
-)
-
 //easyjson:json
 type Error struct {
 	Err    string `json:"err"`

@@ -2,13 +2,11 @@ package server
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"strings"
 
 	"github.com/Vilinvil/task_messaggio/internal/message/config"
 	"github.com/Vilinvil/task_messaggio/internal/message/server/delivery"
-	"github.com/Vilinvil/task_messaggio/pkg/myerrors"
 	"github.com/Vilinvil/task_messaggio/pkg/mylogger"
 )
 
@@ -22,14 +20,14 @@ func (s *Server) Run(config *config.Config) error {
 	logger, err := mylogger.New(strings.Split(config.OutputLogPath, " "),
 		strings.Split(config.ErrorOutputLogPath, " "), config.ProductionMode)
 	if err != nil {
-		return fmt.Errorf(myerrors.ErrTemplate, err)
+		return err
 	}
 
 	defer logger.Sync() //nolint:errcheck
 
-	mux, err := delivery.NewMux(baseCtx, config.URLDataBase, logger)
+	mux, err := delivery.NewMux(baseCtx, config.URLDataBase, config.BrokerAddr, logger)
 	if err != nil {
-		return fmt.Errorf(myerrors.ErrTemplate, err)
+		return err
 	}
 
 	s.httpServer = &http.Server{ //nolint:exhaustruct
@@ -42,9 +40,9 @@ func (s *Server) Run(config *config.Config) error {
 
 	logger.Infof("Start server:%s", config.Port)
 
-	return fmt.Errorf(myerrors.ErrTemplate, s.httpServer.ListenAndServe())
+	return s.httpServer.ListenAndServe()
 }
 
 func (s *Server) Shutdown(ctx context.Context) error {
-	return fmt.Errorf(myerrors.ErrTemplate, s.httpServer.Shutdown(ctx))
+	return s.httpServer.Shutdown(ctx)
 }
