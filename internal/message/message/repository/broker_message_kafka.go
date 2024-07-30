@@ -5,7 +5,6 @@ import (
 
 	"github.com/Vilinvil/task_messaggio/pkg/models"
 	"github.com/Vilinvil/task_messaggio/pkg/mylogger"
-
 	"github.com/segmentio/kafka-go"
 )
 
@@ -33,10 +32,7 @@ func NewBrokerMessageKafka(brokerAddr string, logger *mylogger.MyLogger) (*Broke
 		return nil, err
 	}
 
-	err = preBroker.initWriter()
-	if err != nil {
-		return nil, err
-	}
+	preBroker.initWriter()
 
 	err = preBroker.initTopic(logger)
 	if err != nil {
@@ -62,7 +58,7 @@ func (b *BrokerMessageKafka) initConn(logger *mylogger.MyLogger, brokerAddr stri
 
 func (b *BrokerMessageKafka) initTopic(logger *mylogger.MyLogger) error {
 	topicConfigs := []kafka.TopicConfig{
-		{
+		{ //nolint:exhaustruct
 			Topic:             TopicMessageName,
 			NumPartitions:     NumPartitions,
 			ReplicationFactor: ReplicationFactor,
@@ -79,32 +75,25 @@ func (b *BrokerMessageKafka) initTopic(logger *mylogger.MyLogger) error {
 	return nil
 }
 
-func (b *BrokerMessageKafka) initWriter() error {
+func (b *BrokerMessageKafka) initWriter() {
 	b.writer = &kafka.Writer{ //nolint:exhaustruct
 		Addr:     b.conn.RemoteAddr(),
 		Topic:    TopicMessageName,
 		Balancer: &kafka.Hash{}, //nolint:exhaustruct
 	}
-
-	return nil
 }
 
 func (b *BrokerMessageKafka) Close() error {
-	logger, err := mylogger.Get()
+	err := b.conn.Close()
 	if err != nil {
-		return err
-	}
-
-	err = b.conn.Close()
-	if err != nil {
-		logger.Error(err)
+		b.logger.Error(err)
 
 		return err
 	}
 
 	err = b.writer.Close()
 	if err != nil {
-		logger.Error(err)
+		b.logger.Error(err)
 
 		return err
 	}
@@ -116,7 +105,7 @@ func (b *BrokerMessageKafka) WriteMessage(ctx context.Context, msgPayload *model
 	logger := b.logger.EnrichReqID(ctx)
 
 	err := b.writer.WriteMessages(ctx,
-		kafka.Message{Key: msgPayload.ID[:], Value: []byte(msgPayload.Value)},
+		kafka.Message{Key: msgPayload.ID[:], Value: []byte(msgPayload.Value)}, //nolint:exhaustruct
 	)
 	if err != nil {
 		logger.Error(err)

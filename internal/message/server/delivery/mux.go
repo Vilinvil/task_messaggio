@@ -2,12 +2,12 @@ package delivery
 
 import (
 	"context"
-	"github.com/Vilinvil/task_messaggio/internal/message/message/repository"
 	"net/http"
 
 	// /docs - need for handler with swagger documentations
 	_ "github.com/Vilinvil/task_messaggio/docs"
 	messagedelivery "github.com/Vilinvil/task_messaggio/internal/message/message/delivery"
+	"github.com/Vilinvil/task_messaggio/internal/message/message/repository"
 	"github.com/Vilinvil/task_messaggio/internal/message/message/usecases"
 	"github.com/Vilinvil/task_messaggio/pkg/delivery"
 	mymiddleware "github.com/Vilinvil/task_messaggio/pkg/middleware"

@@ -15,7 +15,7 @@ mkdir-logs:
 	mkdir --parents /var/log/message
 
 .PHONY: mkdir-log-message_worker
-mkdir-log-message-worker:
+mkdir-log-message_worker:
 	 mkdir --parents /var/log/message_worker
 
 .PHONY: swag

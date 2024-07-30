@@ -14,9 +14,7 @@ type Server struct {
 	httpServer *http.Server
 }
 
-func (s *Server) Run(config *config.Config) error {
-	baseCtx := context.Background()
-
+func (s *Server) Run(ctx context.Context, config *config.Config) error {
 	logger, err := mylogger.New(strings.Split(config.OutputLogPath, " "),
 		strings.Split(config.ErrorOutputLogPath, " "), config.ProductionMode)
 	if err != nil {
@@ -25,7 +23,7 @@ func (s *Server) Run(config *config.Config) error {
 
 	defer logger.Sync() //nolint:errcheck
 
-	mux, err := delivery.NewMux(baseCtx, config.URLDataBase, config.BrokerAddr, logger)
+	mux, err := delivery.NewMux(ctx, config.URLDataBase, config.BrokerAddr, logger)
 	if err != nil {
 		return err
 	}

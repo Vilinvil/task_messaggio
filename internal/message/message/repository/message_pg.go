@@ -5,7 +5,6 @@ import (
 
 	"github.com/Vilinvil/task_messaggio/pkg/models"
 	"github.com/Vilinvil/task_messaggio/pkg/mylogger"
-
 	"github.com/go-park-mail-ru/2023_2_Rabotyagi/pkg/repository"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -61,8 +60,6 @@ func (m *MessagePg) addCounterMessage(ctx context.Context, tx pgx.Tx, delta int)
 }
 
 func (m *MessagePg) AddMessage(ctx context.Context, preMessage *models.MessagePayload) error {
-	logger := m.logger.EnrichReqID(ctx)
-
 	err := pgx.BeginFunc(ctx, m.pool, func(tx pgx.Tx) error {
 		err := m.insertMessage(ctx, tx, preMessage)
 		if err != nil {
@@ -77,8 +74,6 @@ func (m *MessagePg) AddMessage(ctx context.Context, preMessage *models.MessagePa
 		return nil
 	})
 	if err != nil {
-		logger.Error(err)
-
 		return err
 	}
 

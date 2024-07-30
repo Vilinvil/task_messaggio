@@ -1,6 +1,8 @@
 package main
 
 import (
+	"context"
+
 	"github.com/Vilinvil/task_messaggio/internal/message/config"
 	"github.com/Vilinvil/task_messaggio/internal/message/server"
 )
@@ -21,8 +23,9 @@ func main() {
 	}
 
 	srv := new(server.Server)
+	ctx := context.Background()
 
-	if err := srv.Run(configServer); err != nil {
+	if err := srv.Run(ctx, configServer); err != nil {
 		panic(err)
 	}
 }
