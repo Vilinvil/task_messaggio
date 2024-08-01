@@ -1,0 +1,86 @@
+basePath: /api/v1
+definitions:
+  models.MessageStatistic:
+    properties:
+      handled:
+        type: integer
+      total:
+        type: integer
+    type: object
+  myerrors.Error:
+    properties:
+      err:
+        type: string
+    type: object
+  responses.ResponseSuccessful:
+    properties:
+      body:
+        type: string
+    type: object
+host: localhost:8090
+info:
+  contact:
+    email: ivn-15-07@mail.ru
+    name: Vladislav
+    url: https://t.me/Vilin0
+  description: This api for message service
+  title: Swagger message API
+  version: "1.0"
+paths:
+  /message:
+    post:
+      consumes:
+      - application/x-www-form-urlencoded
+      parameters:
+      - description: текст сообщения
+        in: body
+        name: orderChanges
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/responses.ResponseSuccessful'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/myerrors.Error'
+        "405":
+          description: Method Not Allowed
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: добавить сообщение в систему
+      tags:
+      - message
+  /message/statistic:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.MessageStatistic'
+        "405":
+          description: Method Not Allowed
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: посмотреть статистику по сообщениям
+      tags:
+      - message
+securityDefinitions:
+  BasicAuth:
+    type: basic
+swagger: "2.0"

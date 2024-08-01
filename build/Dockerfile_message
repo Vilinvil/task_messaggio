@@ -1,0 +1,51 @@
+FROM golang:1.22-alpine3.20 as build
+
+WORKDIR /var/message
+
+RUN apk update
+RUN apk add --no-cache make
+RUN go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@v4.17.1
+RUN go install github.com/swaggo/swag/cmd/swag@v1.16.3
+RUN go install github.com/mailru/easyjson/...@v0.7.7
+
+COPY migrations migrations
+COPY cmd/message cmd/message
+COPY internal/message internal/message
+COPY pkg pkg
+COPY go.mod .
+COPY go.sum .
+
+ARG DOMAIN
+
+COPY Makefile .
+RUN make mkdir-log-message
+RUN make easyjson
+RUN sh -c "sed -i 's/goods-galaxy.ru/$DOMAIN/g' cmd/message/main.go"
+RUN make swag
+
+
+RUN go build -o main ./cmd/message/main.go
+
+#=========================================================================================
+FROM alpine:3.20 as production
+
+WORKDIR /var/message
+
+COPY --from=build /var/log/message /var/log/message
+COPY --from=build /var/message/migrations /var/message/migrations
+COPY --from=build /go/bin/migrate /var/message/migrate
+COPY --from=build /var/message/main main
+
+ENV PORT=8090
+ENV OUTPUT_LOG_PATH="stdout /var/log/message/logs.json"
+ENV ERROR_OUTPUT_LOG_PATH="stderr /var/log/message/errors.json"
+ENV BASIC_TIMEOUT=10
+ENV URL_DATABASE="postgres://postgres:postgres@postgres:5432/postgres?sslmode=disable"
+ENV API_NAME="/api/v1"
+ENV PRODUCTION_MODE=false
+ENV BROKER_ADDR=kafka:9092
+
+
+EXPOSE 8090
+
+ENTRYPOINT ./main

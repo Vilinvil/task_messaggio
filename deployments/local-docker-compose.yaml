@@ -1,0 +1,74 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:16.0-alpine3.18
+    restart: always
+    env_file:
+      - ../.env/.env.postgres
+    healthcheck:
+      test: "pg_isready -U $${POSTGRES_USER}"
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+  kafka:
+    image: apache/kafka:3.7.1
+    restart: always
+    env_file:
+      - ../.env/.env.kafka
+    healthcheck:
+      test: "/opt/kafka/bin/kafka-topics.sh --bootstrap-server kafka:9092 --list"
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
+    ports:
+      - "9092:9092"
+  message:
+    build:
+      context: ../.
+      dockerfile: ./build/Dockerfile_message
+      args:
+        - DOMAIN=${DOMAIN}
+    restart: always
+    env_file:
+      - ../.env/.env.message
+    healthcheck:
+      test: "nc -z 127.0.0.1 $${PORT} || exit 1"
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 15s
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    volumes:
+      - log-message:/var/log/message
+    ports:
+      - "7443:8090"
+  messageworker:
+    build:
+      context: ../.
+      dockerfile: ./build/Dockerfile_messageworker
+    restart: always
+    env_file:
+      - ../.env/.env.messageworker
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    volumes:
+      - log-messageworker:/var/log/messageworker
+
+volumes:
+  postgres:
+  log-message:
+  log-messageworker:

@@ -91,7 +91,6 @@ linters:
     - varnamelen
     - wastedassign
     - whitespace
-    - wrapcheck
     - wsl
     - zerologlint
 
@@ -109,6 +108,7 @@ linters:
     - ifshort
     - tagalign
     - godot
+    - wrapcheck
 
   presets:
     - bugs
@@ -133,6 +133,13 @@ linters-settings:
           - $all
         allow:
           - $gostd
+          - "github.com/Vilinvil/task_messaggio"
+          - "github.com/go-park-mail-ru/2023_2_Rabotyagi"
+          - "github.com/google/uuid"
+          - "github.com/jackc/pgx/v5"
+          - "github.com/jackc/pgx/v5/pgxpool"
+          - "github.com/swaggo/http-swagger/v2"
+          - "github.com/segmentio/kafka-go"
         deny:
           - pkg: "github.com/pkg/errors"
             desc: Should be replaced by standard lib errors package

@@ -1,0 +1,1 @@
+ALTER TABLE  public."counter_message" DROP CONSTRAINT IF EXISTS handled_le_total;
