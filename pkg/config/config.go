@@ -14,7 +14,7 @@ const (
 	EnvBrokerAddr         = "BROKER_ADDR"
 
 	StandardBasicTimeout   = "10"
-	StandardURLDataBase    = "postgres://username:wrongpassword@localhost:5432/dbname?sslmode=disable"
+	StandardURLDataBase    = "You need define env URL_DATABASE"
 	StandardAPIName        = "/api/v1"
 	StandardProductionMode = false
 	StandardBrokerAddr     = "localhost:9092"

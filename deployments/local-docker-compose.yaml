@@ -5,7 +5,7 @@ services:
     image: postgres:16.0-alpine3.18
     restart: always
     env_file:
-      - ../.env/.env.postgres
+      - ../.env.example/.env.postgres
     healthcheck:
       test: "pg_isready -U $${POSTGRES_USER}"
       interval: 15s
@@ -14,26 +14,28 @@ services:
       start_period: 10s
     volumes:
       - postgres:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
   kafka:
     image: apache/kafka:3.7.1
     restart: always
     env_file:
-      - ../.env/.env.kafka
+      - ../.env.example/.env.kafka
     healthcheck:
       test: "/opt/kafka/bin/kafka-topics.sh --bootstrap-server kafka:9092 --list"
       interval: 15s
       timeout: 10s
       retries: 5
       start_period: 10s
+    ports:
+      - "9092:9092"
   message:
     build:
       context: ../.
       dockerfile: ./build/Dockerfile_message
     restart: always
-    env_file:
-      - ../.env/.env.message
     healthcheck:
-      test: "nc -z message $${PORT} || exit 1"
+      test: "nc -z 127.0.0.1 $${PORT} || exit 1"
       interval: 15s
       timeout: 10s
       retries: 5
@@ -52,8 +54,6 @@ services:
       context: ../.
       dockerfile: ./build/Dockerfile_messageworker
     restart: always
-    env_file:
-      - ../.env/.env.messageworker
     depends_on:
       postgres:
         condition: service_healthy
@@ -61,22 +61,6 @@ services:
         condition: service_healthy
     volumes:
       - log-messageworker:/var/log/messageworker
-  nginx:
-    image: nginx:1.27.0
-    restart: always
-    env_file:
-      - ../.env/.env.nginx
-    depends_on:
-      message:
-        condition: service_healthy
-      messageworker:
-        condition: service_started
-    volumes:
-      - ../configs/nginx.conf:/etc/nginx/nginx.conf
-      - ${SSL_CERTIFICATE}:/etc/nginx/cert.cert
-      - ${SSL_CERTIFICATE_KEY}:/etc/nginx/key.key
-    ports:
-      - "9443:9443"
 
 volumes:
   postgres:

@@ -53,9 +53,15 @@ func (s *MessageWorker) JobMessages(ctx context.Context,
 		return s.chErr
 	}
 
+	wgCreationChErr := sync.WaitGroup{}
+
+	wgCreationChErr.Add(1)
+
 	s.onceChErr.Do(func() {
 		go func() {
 			s.chErr = make(chan error)
+
+			wgCreationChErr.Done()
 
 			chConsumptionMessages, chErrConsumptionMessage := s.brokerMessage.StartConsumption(ctx)
 
@@ -93,6 +99,8 @@ func (s *MessageWorker) JobMessages(ctx context.Context,
 			s.chErr <- nil
 		}()
 	})
+
+	wgCreationChErr.Wait()
 
 	return s.chErr
 }

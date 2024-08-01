@@ -21,3 +21,7 @@ mkdir-log-messageworker:
 .PHONY: swag
 swag:
 	swag init -ot go,yaml --parseDependency --parseInternal  --dir cmd/message/,pkg/,internal/
+
+.PHONY: cp-env
+cp-env:
+	cp -r .env.example/ .env/

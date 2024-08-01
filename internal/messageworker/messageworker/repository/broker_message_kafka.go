@@ -2,6 +2,8 @@ package repository
 
 import (
 	"context"
+	"errors"
+	"io"
 	"sync"
 
 	"github.com/Vilinvil/task_messaggio/pkg/models"
@@ -95,16 +97,16 @@ func (b *BrokerMessageKafka) startConsumptionGeneration(ctx context.Context,
 		err := reader.Close()
 		if err != nil {
 			b.logger.Error(err)
-			b.chErrConsumptionMessages <- err
 			close(b.chConsumptionMessages)
+			b.chErrConsumptionMessages <- err
 		}
 	}()
 
 	err := reader.SetOffset(offset)
 	if err != nil {
 		b.logger.Error(err)
-		b.chErrConsumptionMessages <- err
 		close(b.chConsumptionMessages)
+		b.chErrConsumptionMessages <- err
 
 		return
 	}
@@ -115,8 +117,8 @@ func (b *BrokerMessageKafka) startConsumptionGeneration(ctx context.Context,
 		msg, err := reader.ReadMessage(ctx)
 		if err != nil {
 			b.logger.Error(err)
-			b.chErrConsumptionMessages <- err
 			close(b.chConsumptionMessages)
+			b.chErrConsumptionMessages <- err
 
 			return
 		}
@@ -151,17 +153,28 @@ func (b *BrokerMessageKafka) StartConsumption(ctx context.Context) ( //nolint:no
 		return b.chConsumptionMessages, b.chErrConsumptionMessages
 	}
 
+	wgCreationChannels := sync.WaitGroup{}
+
+	wgCreationChannels.Add(1)
+
 	b.onceChannels.Do(func() {
 		b.chConsumptionMessages = make(chan MessagePayloadWithCommitFunc)
 		b.chErrConsumptionMessages = make(chan error)
+
+		wgCreationChannels.Done()
 
 		go func() {
 			for {
 				gen, err := b.consumerGroup.Next(ctx)
 				if err != nil {
+					if errors.Is(err, io.EOF) {
+						continue
+					}
+
+					b.logger.Debugf("%+v", b.consumerGroup)
 					b.logger.Error(err)
-					b.chErrConsumptionMessages <- err
 					close(b.chConsumptionMessages)
+					b.chErrConsumptionMessages <- err
 
 					return
 				}
@@ -170,7 +183,7 @@ func (b *BrokerMessageKafka) StartConsumption(ctx context.Context) ( //nolint:no
 				for _, assignment := range assignments {
 					partition, offset := assignment.ID, assignment.Offset
 
-					b.logger.Debugf("partition/offset: %d/%d", partition, offset)
+					b.logger.Debugf("partition/offset: %d/%d\n", partition, offset)
 
 					gen.Start(func(ctx context.Context) {
 						b.startConsumptionGeneration(ctx, gen, partition, offset)
@@ -179,6 +192,8 @@ func (b *BrokerMessageKafka) StartConsumption(ctx context.Context) ( //nolint:no
 			}
 		}()
 	})
+
+	wgCreationChannels.Wait()
 
 	return b.chConsumptionMessages, b.chErrConsumptionMessages
 }

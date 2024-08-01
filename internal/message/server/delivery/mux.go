@@ -12,7 +12,6 @@ import (
 	"github.com/Vilinvil/task_messaggio/pkg/delivery"
 	mymiddleware "github.com/Vilinvil/task_messaggio/pkg/middleware"
 	"github.com/Vilinvil/task_messaggio/pkg/mylogger"
-
 	"github.com/go-park-mail-ru/2023_2_Rabotyagi/pkg/middleware"
 	httpSwagger "github.com/swaggo/http-swagger/v2"
 )
