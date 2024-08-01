@@ -15,9 +15,12 @@ COPY pkg pkg
 COPY go.mod .
 COPY go.sum .
 
+ARG DOMAIN
+
 COPY Makefile .
 RUN make mkdir-log-message
 RUN make easyjson
+RUN sh -c "sed -i 's/goods-galaxy.ru/$DOMAIN/g' cmd/message/main.go"
 RUN make swag
 
 

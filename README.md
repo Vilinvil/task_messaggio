@@ -4,6 +4,10 @@
 
 Условия задания лежат [в файле](task.md)
 
+
+
+## Команды для разработки
+
 ### Установка утилиты для накатки миграций
 ```bash
 go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@v4.17.1

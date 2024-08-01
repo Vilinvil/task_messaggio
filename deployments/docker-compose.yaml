@@ -29,6 +29,8 @@ services:
     build:
       context: ../.
       dockerfile: ./build/Dockerfile_message
+      args:
+        - DOMAIN=${DOMAIN}
     restart: always
     env_file:
       - ../.env/.env.message
