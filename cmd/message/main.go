@@ -13,7 +13,7 @@ import (
 // @contact.name   Vladislav
 // @contact.url    https://t.me/Vilin0
 // @contact.email  ivn-15-07@mail.ru
-// @host      localhost:8090
+// @host      goods-galaxy.ru:7443
 // @BasePath  /api/v1
 // @securityDefinitions.basic  BasicAuth
 func main() {

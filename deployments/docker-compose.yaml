@@ -45,8 +45,6 @@ services:
         condition: service_healthy
     volumes:
       - log-message:/var/log/message
-    ports:
-      - "8090:8090"
   messageworker:
     build:
       context: ../.
@@ -76,7 +74,7 @@ services:
       - ${SSL_CERTIFICATE}:/etc/nginx/cert.cert
       - ${SSL_CERTIFICATE_KEY}:/etc/nginx/key.key
     ports:
-      - "9443:9443"
+      - "7443:7443"
 
 volumes:
   postgres:
