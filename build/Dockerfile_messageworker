@@ -1,0 +1,39 @@
+FROM golang:1.22-alpine3.20 as build
+
+WORKDIR /var/messageworker
+
+RUN apk update
+RUN apk add --no-cache make
+
+COPY cmd/messageworker cmd/messageworker
+COPY internal/messageworker internal/messageworker
+COPY pkg pkg
+COPY go.mod .
+COPY go.sum .
+
+COPY Makefile .
+RUN make mkdir-log-messageworker
+
+RUN go build -o main ./cmd/messageworker/main.go
+
+#=========================================================================================
+FROM alpine:3.20 as production
+
+WORKDIR /var/messageworker
+
+COPY --from=build /var/log/messageworker /var/log/messageworker
+COPY --from=build /var/messageworker/main main
+
+ENV PORT=8090
+ENV OUTPUT_LOG_PATH="stdout /var/log/message/logs.json"
+ENV ERROR_OUTPUT_LOG_PATH="stderr /var/log/message/errors.json"
+ENV BASIC_TIMEOUT=10
+ENV URL_DATABASE="postgres://postgres:postgres@postgres:5432/postgres?sslmode=disable"
+ENV API_NAME="/api/v1"
+ENV PRODUCTION_MODE=false
+ENV BROKER_ADDR=localhost:9092
+
+
+EXPOSE 8090
+
+ENTRYPOINT ./main

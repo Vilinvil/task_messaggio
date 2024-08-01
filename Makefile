@@ -11,12 +11,12 @@ create-migration:
 	migrate create -ext sql -dir ./migrations $(name)
 
 .PHONY: mkdir-log-message
-mkdir-logs:
+mkdir-log-message:
 	mkdir --parents /var/log/message
 
-.PHONY: mkdir-log-message_worker
-mkdir-log-message_worker:
-	 mkdir --parents /var/log/message_worker
+.PHONY: mkdir-log-messageworker
+mkdir-log-messageworker:
+	 mkdir --parents /var/log/messageworker
 
 .PHONY: swag
 swag:

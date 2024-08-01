@@ -23,6 +23,8 @@ func (s *Server) Run(ctx context.Context, config *config.Config) error {
 
 	defer logger.Sync() //nolint:errcheck
 
+	logger.Debugln(config)
+
 	mux, err := delivery.NewMux(ctx, config.URLDataBase, config.BrokerAddr, logger)
 	if err != nil {
 		return err

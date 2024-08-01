@@ -9,6 +9,11 @@
 go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@v4.17.1
 ```
 
+### Установка утилиты для генерации кода сериализации easyjson
+```bash
+go get github.com/mailru/easyjson && go install github.com/mailru/easyjson/...@v0.7.7
+```
+
 ### Пример команды для накатки миграции
 ```bash
  migrate -database postgres://postgres:postgres:5432/postgres?sslmode=disable -path migrations/ up

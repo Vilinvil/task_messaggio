@@ -10,8 +10,8 @@ import (
 const (
 	EnvTimeOnTask = "TIME_ON_TASK"
 
-	StandardOutputLogPath      = "stdout /var/log/message_worker/logs.json"
-	StandardErrorOutputLogPath = "stderr /var/log/message_worker/err_logs.json"
+	StandardOutputLogPath      = "stdout /var/log/messageworker/logs.json"
+	StandardErrorOutputLogPath = "stderr /var/log/messageworker/err_logs.json"
 	StandardTimeOnTask         = "10"
 )
 

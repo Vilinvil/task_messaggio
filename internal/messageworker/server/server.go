@@ -43,6 +43,8 @@ func (s *Server) Run(ctx context.Context, config *config.Config) error {
 
 	defer logger.Sync() //nolint:errcheck
 
+	logger.Debugln(config)
+
 	brokerMessageKafka, err := repository.NewBrokerMessageKafka(config.BrokerAddr, logger)
 	if err != nil {
 		return err

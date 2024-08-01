@@ -2,7 +2,6 @@ package repository
 
 import (
 	"context"
-
 	"github.com/Vilinvil/task_messaggio/pkg/models"
 	"github.com/Vilinvil/task_messaggio/pkg/mylogger"
 	"github.com/segmentio/kafka-go"
@@ -32,7 +31,7 @@ func NewBrokerMessageKafka(brokerAddr string, logger *mylogger.MyLogger) (*Broke
 		return nil, err
 	}
 
-	preBroker.initWriter()
+	preBroker.initWriter(brokerAddr)
 
 	err = preBroker.initTopic(logger)
 	if err != nil {
@@ -75,9 +74,11 @@ func (b *BrokerMessageKafka) initTopic(logger *mylogger.MyLogger) error {
 	return nil
 }
 
-func (b *BrokerMessageKafka) initWriter() {
-	b.writer = &kafka.Writer{ //nolint:exhaustruct
-		Addr:     b.conn.RemoteAddr(),
+func (b *BrokerMessageKafka) initWriter(brokerAddr string) {
+	b.logger.Debugln(brokerAddr, b.conn.RemoteAddr())
+
+	b.writer = &kafka.Writer{
+		Addr:     kafka.TCP(b.conn.RemoteAddr().String()),
 		Topic:    TopicMessageName,
 		Balancer: &kafka.Hash{}, //nolint:exhaustruct
 	}
