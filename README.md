@@ -145,3 +145,8 @@ go get github.com/mailru/easyjson && go install github.com/mailru/easyjson/...@v
 ```bash
 go install github.com/swaggo/swag/cmd/swag@v1.16.3
 ```
+
+### Установка утилиты для генерации mock-ов 
+```bash
+go install go.uber.org/mock/mockgen@v0.4.0
+```

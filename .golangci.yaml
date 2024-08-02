@@ -156,3 +156,9 @@ linters-settings:
       - w http.ResponseWriter
       - r *http.Request
       - r io.Reader
+
+issues:
+  exclude-rules:
+    - path: _test.go
+      linters:
+        - funlen

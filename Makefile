@@ -25,3 +25,22 @@ swag:
 .PHONY: cp-env
 cp-env:
 	cp -r .env.example/ .env/
+
+.PHONY: test
+test:
+	mkdir -p bin
+	 go test --race -coverpkg=./... -coverprofile=bin/cover.out ./... \
+ 	 && cat bin/cover.out | grep -v "mocks" | grep -v "easyjson" > bin/pure_cover.out \
+  	 && go tool cover -html=bin/pure_cover.out -o=bin/cover.html \
+  	 && go tool cover --func bin/pure_cover.out
+
+.PHONY: mockgen
+mockgen:
+	mockgen --source=$(source) --destination=$(destination) --package=mocks
+
+.PHONY: mockgen-all
+mockgen-all:
+	make mockgen source=internal/message/message/delivery/message_handler.go \
+ 		destination=internal/message/message/mocks/usecases.go
+	make mockgen source=internal/message/message/usecases/message_service.go \
+		destination=internal/message/message/mocks/reposirory.go
