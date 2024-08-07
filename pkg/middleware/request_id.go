@@ -8,7 +8,7 @@ import (
 
 func AddReqID(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		ctx := mylogger.AddRequestIDToCtx(r.Context())
+		ctx, _ := mylogger.AddRequestIDToCtx(r.Context())
 
 		r = r.WithContext(ctx)
 
