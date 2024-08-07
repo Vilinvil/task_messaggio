@@ -18,14 +18,16 @@ type Message struct {
 
 var ErrLenMessage = myerrors.NewBadRequestError("Длина сообщения должна быть больше 0 и меньше 4000 символов utf8")
 
+type GeneratorUUID func() uuid.UUID
+
 type MessagePayload struct {
 	ID    uuid.UUID
 	Value string
 }
 
-func NewMessagePayload(value string) *MessagePayload {
+func NewMessagePayload(value string, generatorUUID GeneratorUUID) *MessagePayload {
 	return &MessagePayload{
-		ID:    uuid.New(),
+		ID:    generatorUUID(),
 		Value: value,
 	}
 }

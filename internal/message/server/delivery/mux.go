@@ -2,6 +2,7 @@ package delivery
 
 import (
 	"context"
+	"github.com/google/uuid"
 	"net/http"
 
 	// /docs - need for handler with swagger documentations
@@ -29,7 +30,7 @@ func NewMux(ctx context.Context, urlDataBase, brokerAddr string, logger *mylogge
 		return nil, err
 	}
 
-	messageService := usecases.NewMessageService(messagePg, brokerMessage, logger)
+	messageService := usecases.NewMessageService(messagePg, brokerMessage, uuid.New, logger)
 
 	messageHandler := messagedelivery.NewMessageHandler(messageService, logger)
 

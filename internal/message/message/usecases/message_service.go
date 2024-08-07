@@ -6,6 +6,7 @@ import (
 	"github.com/Vilinvil/task_messaggio/internal/message/message/repository"
 	"github.com/Vilinvil/task_messaggio/pkg/models"
 	"github.com/Vilinvil/task_messaggio/pkg/mylogger"
+
 	"github.com/google/uuid"
 )
 
@@ -25,15 +26,17 @@ type BrokerMessageRepository interface {
 type MessageService struct {
 	messageRepository       MessageRepository
 	brokerMessageRepository BrokerMessageRepository
+	generatorUUID           models.GeneratorUUID
 	logger                  *mylogger.MyLogger
 }
 
 func NewMessageService(messageRepository MessageRepository,
-	brokerMessageRepository BrokerMessageRepository, logger *mylogger.MyLogger,
+	brokerMessageRepository BrokerMessageRepository, generatorUUID models.GeneratorUUID, logger *mylogger.MyLogger,
 ) *MessageService {
 	return &MessageService{
 		messageRepository:       messageRepository,
 		brokerMessageRepository: brokerMessageRepository,
+		generatorUUID:           generatorUUID,
 		logger:                  logger,
 	}
 }
@@ -41,7 +44,7 @@ func NewMessageService(messageRepository MessageRepository,
 func (m *MessageService) AddMessage(ctx context.Context, value string) (uuid.UUID, error) {
 	logger := m.logger.EnrichReqID(ctx)
 
-	preMessage := models.NewMessagePayload(value)
+	preMessage := models.NewMessagePayload(value, m.generatorUUID)
 
 	err := preMessage.Validate()
 	if err != nil {
@@ -68,10 +71,5 @@ func (m *MessageService) GetMessageStatistic(ctx context.Context) (*models.Messa
 }
 
 func (m *MessageService) WriteMessage(ctx context.Context, msgPayload *models.MessagePayload) error {
-	err := m.brokerMessageRepository.WriteMessage(ctx, msgPayload)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return m.brokerMessageRepository.WriteMessage(ctx, msgPayload)
 }

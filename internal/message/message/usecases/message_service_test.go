@@ -3,8 +3,7 @@ package usecases_test
 import (
 	"context"
 	"errors"
-	"math/rand"
-	"sync"
+	"fmt"
 	"testing"
 
 	"github.com/Vilinvil/task_messaggio/internal/message/message/mocks"
@@ -14,6 +13,13 @@ import (
 
 	"github.com/google/uuid"
 	"go.uber.org/mock/gomock"
+)
+
+var (
+	testUUID          = uuid.MustParse("52fdfc07-2182-454f-963f-5f0f9a621d72") //nolint:gochecknoglobals
+	testGeneratorUUID = func() uuid.UUID {                                     //nolint:gochecknoglobals
+		return testUUID
+	}
 )
 
 func NewMessageService(ctrl *gomock.Controller,
@@ -27,15 +33,11 @@ func NewMessageService(ctrl *gomock.Controller,
 	behaviorMessageRepository(mockMessageRepository)
 	behaviorBrokerMessageRepository(mockBrokerMessageRepository)
 
-	return usecases.NewMessageService(mockMessageRepository, mockBrokerMessageRepository, logger)
+	return usecases.NewMessageService(mockMessageRepository, mockBrokerMessageRepository, testGeneratorUUID, logger)
 }
 
-func TestMessageService_AddMessage(t *testing.T) {
+func TestAddMessage(t *testing.T) {
 	t.Parallel()
-
-	uuid.SetRand(rand.New(rand.NewSource(1))) //nolint:gosec
-
-	muRand := sync.Mutex{}
 
 	nopLogger := mylogger.NewNop()
 
@@ -48,23 +50,25 @@ func TestMessageService_AddMessage(t *testing.T) {
 		expectedErr                     error
 	}
 
+	errTestInternal := fmt.Errorf("тестовая внутреняя ошибка") //nolint
+
 	testCases := []TestCase{
 		{
 			name:       "basic test",
 			inputValue: "basic message",
 			behaviorMessageRepository: func(m *mocks.MockMessageRepository) {
 				m.EXPECT().AddMessage(gomock.Any(), &models.MessagePayload{
-					ID:    uuid.MustParse("52fdfc07-2182-454f-963f-5f0f9a621d72"),
+					ID:    testUUID,
 					Value: "basic message",
 				})
 			},
 			behaviorBrokerMessageRepository: func(m *mocks.MockBrokerMessageRepository) {
 				m.EXPECT().WriteMessage(gomock.Any(), &models.MessagePayload{
-					ID:    uuid.MustParse("52fdfc07-2182-454f-963f-5f0f9a621d72"),
+					ID:    testUUID,
 					Value: "basic message",
 				})
 			},
-			expectedResponse: uuid.MustParse("52fdfc07-2182-454f-963f-5f0f9a621d72"),
+			expectedResponse: testUUID,
 			expectedErr:      nil,
 		},
 		{
@@ -78,6 +82,40 @@ func TestMessageService_AddMessage(t *testing.T) {
 			},
 			expectedResponse: uuid.UUID{},
 			expectedErr:      models.ErrLenMessage,
+		},
+		{
+			name:       "internal error in messageRepository.AddMessage(...)",
+			inputValue: "basic message",
+			behaviorMessageRepository: func(m *mocks.MockMessageRepository) {
+				m.EXPECT().AddMessage(gomock.Any(), &models.MessagePayload{
+					ID:    testUUID,
+					Value: "basic message",
+				}).Return(errTestInternal)
+			},
+			behaviorBrokerMessageRepository: func(m *mocks.MockBrokerMessageRepository) {
+				m.EXPECT()
+			},
+			expectedResponse: uuid.UUID{},
+			expectedErr:      errTestInternal,
+		},
+
+		{
+			name:       "internal error in brokerMessageRepository.WriteMessage(...)",
+			inputValue: "basic message",
+			behaviorMessageRepository: func(m *mocks.MockMessageRepository) {
+				m.EXPECT().AddMessage(gomock.Any(), &models.MessagePayload{
+					ID:    testUUID,
+					Value: "basic message",
+				}).Return(nil)
+			},
+			behaviorBrokerMessageRepository: func(m *mocks.MockBrokerMessageRepository) {
+				m.EXPECT().WriteMessage(gomock.Any(), &models.MessagePayload{
+					ID:    testUUID,
+					Value: "basic message",
+				}).Return(errTestInternal)
+			},
+			expectedResponse: uuid.UUID{},
+			expectedErr:      errTestInternal,
 		},
 	}
 
@@ -95,11 +133,7 @@ func TestMessageService_AddMessage(t *testing.T) {
 
 			ctx := context.Background()
 
-			muRand.Lock()
-
 			receivedResponse, err := messageService.AddMessage(ctx, testCase.inputValue)
-
-			muRand.Unlock()
 
 			if receivedResponse != testCase.expectedResponse {
 				t.Errorf("receivedResponse: %v NOT EQUAL expectedResponse: %v ",
