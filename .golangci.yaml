@@ -143,6 +143,12 @@ linters-settings:
         deny:
           - pkg: "github.com/pkg/errors"
             desc: Should be replaced by standard lib errors package
+          - pkg: "github.com/go-park-mail-ru/2023_2_Rabotyagi/pkg/mylogger"
+            desc: This project have own package for similar purpose
+          - pkg: "github.com/go-park-mail-ru/2023_2_Rabotyagi/pkg/myerrors"
+            desc: This project have own package for similar purpose
+          - pkg: "github.com/go-park-mail-ru/2023_2_Rabotyagi/pkg/responses"
+            desc: This project have own package for similar purpose
   tagliatelle:
     case:
       use-field-name: true

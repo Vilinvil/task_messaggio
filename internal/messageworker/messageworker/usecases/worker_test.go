@@ -12,7 +12,6 @@ import (
 	"github.com/Vilinvil/task_messaggio/internal/messageworker/messageworker/usecases"
 	"github.com/Vilinvil/task_messaggio/pkg/models"
 	"github.com/Vilinvil/task_messaggio/pkg/mylogger"
-
 	"go.uber.org/mock/gomock"
 )
 
@@ -42,13 +41,13 @@ func TestJobMessageErrWhenHandleConsumedMessage(t *testing.T) {
 	defer close(chConsumptionMessages)
 	defer close(chErrConsumptionMessage)
 
-	behaviorMessageRepository := func(mock *mocks.MockMessageRepository) {}
+	behaviorMessageRepository := func(_ *mocks.MockMessageRepository) {}
 	behaviorBrokerMessage := func(mock *mocks.MockBrokerMessage) {
 		mock.EXPECT().StartConsumption(gomock.Any()).Return(chConsumptionMessages, chErrConsumptionMessage)
 	}
 
-	errHandler := fmt.Errorf("my err handle")
-	handlerFunc := func(ctx context.Context, payload *models.MessagePayload) error {
+	errHandler := fmt.Errorf("my err handle") //nolint
+	handlerFunc := func(_ context.Context, _ *models.MessagePayload) error {
 		return errHandler
 	}
 
@@ -84,16 +83,17 @@ func TestJobMessageErrMessageRepositorySetStatusMessage(t *testing.T) {
 	defer close(chConsumptionMessages)
 	defer close(chErrConsumptionMessage)
 
-	errSetStatusMessage := fmt.Errorf("internal error set status")
+	errSetStatusMessage := fmt.Errorf("internal error set status") //nolint
 
 	behaviorMessageRepository := func(mock *mocks.MockMessageRepository) {
-		mock.EXPECT().SetStatusMessage(gomock.Any(), &models.DummyUUID, repository.StatusMessageDone).Return(errSetStatusMessage)
+		mock.EXPECT().
+			SetStatusMessage(gomock.Any(), &models.DummyUUID, repository.StatusMessageDone).Return(errSetStatusMessage)
 	}
 	behaviorBrokerMessage := func(mock *mocks.MockBrokerMessage) {
 		mock.EXPECT().StartConsumption(gomock.Any()).Return(chConsumptionMessages, chErrConsumptionMessage)
 	}
 
-	handlerFunc := func(ctx context.Context, payload *models.MessagePayload) error {
+	handlerFunc := func(_ context.Context, _ *models.MessagePayload) error {
 		return nil
 	}
 
@@ -136,11 +136,9 @@ func TestJobMessageErrCommitFunc(t *testing.T) {
 		mock.EXPECT().StartConsumption(gomock.Any()).Return(chConsumptionMessages, chErrConsumptionMessage)
 	}
 
-	handlerFunc := func(ctx context.Context, payload *models.MessagePayload) error {
-		return nil
-	}
+	handlerFunc := func(_ context.Context, _ *models.MessagePayload) error { return nil }
 
-	errCommitFunc := fmt.Errorf("internal error commit func")
+	errCommitFunc := fmt.Errorf("internal error commit func") //nolint
 	msgPayloadWithCommitFunc := repository.MessagePayloadWithCommitFunc{
 		MessagePayload: *models.NewMessagePayload("", models.DummyGeneratorUUID),
 		CommitFunc: func() error {
@@ -173,16 +171,16 @@ func TestJobMessageErrInChErrConsumptionMessage(t *testing.T) {
 
 	defer close(chErrConsumptionMessage)
 
-	behaviorMessageRepository := func(mock *mocks.MockMessageRepository) {}
+	behaviorMessageRepository := func(_ *mocks.MockMessageRepository) {}
 	behaviorBrokerMessage := func(mock *mocks.MockBrokerMessage) {
 		mock.EXPECT().StartConsumption(gomock.Any()).Return(chConsumptionMessages, chErrConsumptionMessage)
 	}
 
-	handlerFunc := func(ctx context.Context, payload *models.MessagePayload) error {
+	handlerFunc := func(_ context.Context, _ *models.MessagePayload) error {
 		return nil
 	}
 
-	expectedErr := fmt.Errorf("internal err in chErrConsumptionMessage")
+	expectedErr := fmt.Errorf("internal err in chErrConsumptionMessage") //nolint
 
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
@@ -236,7 +234,7 @@ func TestJobMessageMultipleWriteInConsumption(t *testing.T) {
 		mock.EXPECT().StartConsumption(gomock.Any()).Return(chConsumptionMessages, chErrConsumptionMessage)
 	}
 
-	handlerFunc := func(ctx context.Context, payload *models.MessagePayload) error {
+	handlerFunc := func(_ context.Context, _ *models.MessagePayload) error {
 		return nil
 	}
 
@@ -259,9 +257,7 @@ func TestJobMessageMultipleWriteInConsumption(t *testing.T) {
 func multipleCallJobMessage(amountCall int, messageWorker *usecases.MessageWorker) error {
 	chErr := make(chan error)
 
-	handlerFunc := func(ctx context.Context, payload *models.MessagePayload) error {
-		return nil
-	}
+	handlerFunc := func(_ context.Context, _ *models.MessagePayload) error { return nil }
 
 	ctx := context.Background()
 
@@ -269,22 +265,22 @@ func multipleCallJobMessage(amountCall int, messageWorker *usecases.MessageWorke
 
 	amountCall--
 
-	wg := sync.WaitGroup{}
-	wg.Add(amountCall)
+	wgJobMessages := sync.WaitGroup{}
+	wgJobMessages.Add(amountCall)
 
 	for range amountCall {
 		go func() {
-			defer wg.Done()
+			defer wgJobMessages.Done()
 
 			receivedChErr := messageWorker.JobMessages(ctx, handlerFunc)
 			if receivedChErr != expectedChErr {
-				chErr <- fmt.Errorf("receivedChErr and expectedChErr are different")
+				chErr <- fmt.Errorf("receivedChErr and expectedChErr are different") //nolint
 			}
 		}()
 	}
 
 	go func() {
-		wg.Wait()
+		wgJobMessages.Wait()
 		close(chErr)
 	}()
 
@@ -304,7 +300,7 @@ func TestJobMessageMultipleCallJobMessage(t *testing.T) {
 
 	amountCallJobMessage := 100
 
-	behaviorMessageRepository := func(mock *mocks.MockMessageRepository) {}
+	behaviorMessageRepository := func(_ *mocks.MockMessageRepository) {}
 	behaviorBrokerMessage := func(mock *mocks.MockBrokerMessage) {
 		mock.EXPECT().StartConsumption(gomock.Any()).Return(chConsumptionMessages, chErrConsumptionMessage)
 	}

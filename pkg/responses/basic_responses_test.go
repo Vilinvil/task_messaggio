@@ -2,15 +2,16 @@ package responses_test
 
 import (
 	"fmt"
+	"net/http"
+	"net/http/httptest"
+	"testing"
+
 	"github.com/Vilinvil/task_messaggio/pkg/models"
 	"github.com/Vilinvil/task_messaggio/pkg/myerrors"
 	"github.com/Vilinvil/task_messaggio/pkg/mylogger"
 	"github.com/Vilinvil/task_messaggio/pkg/responses"
 	"github.com/go-park-mail-ru/2023_2_Rabotyagi/pkg/utils/test"
 	"go.uber.org/mock/gomock"
-	"net/http"
-	"net/http/httptest"
-	"testing"
 )
 
 type ErrMarshallerResponse struct{}
@@ -73,19 +74,20 @@ func TestSendResponse(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			w := httptest.NewRecorder()
+			recorder := httptest.NewRecorder()
 
-			responses.SendResponse(w, nopLogger, testCase.inputResponse)
+			responses.SendResponse(recorder, nopLogger, testCase.inputResponse)
 
-			if receivedContentType := w.Header().Get("Content-Type"); receivedContentType != testCase.expectedContentType {
+			if receivedContentType := recorder.Header().Get("Content-Type"); receivedContentType !=
+				testCase.expectedContentType {
 				t.Errorf("Expected content-type: %s received: %s", testCase.expectedContentType, receivedContentType)
 			}
 
-			if expectedCode := testCase.inputResponse.Status(); w.Code != expectedCode {
-				t.Errorf("Expected http code: %d received: %d", expectedCode, w.Code)
+			if expectedCode := testCase.inputResponse.Status(); recorder.Code != expectedCode {
+				t.Errorf("Expected http code: %d received: %d", expectedCode, recorder.Code)
 			}
 
-			err := test.CompareHTTPTestResult(w, testCase.expectedResponse)
+			err := test.CompareHTTPTestResult(recorder, testCase.expectedResponse)
 			if err != nil {
 				t.Errorf("Failed CompareHTTPTestResult %+v", err)
 			}
@@ -107,7 +109,7 @@ func TestSendErrResponse(t *testing.T) {
 	testCases := []TestCase{
 		{
 			name:             "not myerror type of error",
-			err:              fmt.Errorf("not myerror type of error"),
+			err:              fmt.Errorf("not myerror type of error"), //nolint
 			expectedResponse: myerrors.ErrInternalServer,
 		},
 		{
@@ -131,19 +133,19 @@ func TestSendErrResponse(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			w := httptest.NewRecorder()
+			recorder := httptest.NewRecorder()
 
-			responses.SendErrResponse(w, nopLogger, testCase.err)
+			responses.SendErrResponse(recorder, nopLogger, testCase.err)
 
-			if receivedContentType := w.Header().Get("Content-Type"); receivedContentType != responses.BaseContentType {
+			if receivedContentType := recorder.Header().Get("Content-Type"); receivedContentType != responses.BaseContentType {
 				t.Errorf("Expected content-type: %s received: %s", responses.BaseContentType, receivedContentType)
 			}
 
-			if expectedCode := testCase.expectedResponse.Status(); w.Code != expectedCode {
-				t.Errorf("Expected http code: %d received: %d", expectedCode, w.Code)
+			if expectedCode := testCase.expectedResponse.Status(); recorder.Code != expectedCode {
+				t.Errorf("Expected http code: %d received: %d", expectedCode, recorder.Code)
 			}
 
-			err := test.CompareHTTPTestResult(w, testCase.expectedResponse)
+			err := test.CompareHTTPTestResult(recorder, testCase.expectedResponse)
 			if err != nil {
 				t.Errorf("Failed CompareHTTPTestResult %+v", err)
 			}

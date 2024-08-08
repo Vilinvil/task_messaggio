@@ -10,7 +10,6 @@ import (
 	"github.com/Vilinvil/task_messaggio/internal/message/message/usecases"
 	"github.com/Vilinvil/task_messaggio/pkg/models"
 	"github.com/Vilinvil/task_messaggio/pkg/mylogger"
-
 	"github.com/google/uuid"
 	"go.uber.org/mock/gomock"
 )
@@ -26,7 +25,8 @@ func NewMessageService(ctrl *gomock.Controller,
 	behaviorMessageRepository(mockMessageRepository)
 	behaviorBrokerMessageRepository(mockBrokerMessageRepository)
 
-	return usecases.NewMessageService(mockMessageRepository, mockBrokerMessageRepository, models.DummyGeneratorUUID, logger)
+	return usecases.NewMessageService(
+		mockMessageRepository, mockBrokerMessageRepository, models.DummyGeneratorUUID, logger)
 }
 
 func TestAddMessage(t *testing.T) {

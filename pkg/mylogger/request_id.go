@@ -3,10 +3,9 @@ package mylogger
 import (
 	"context"
 	"crypto/rand"
-	"fmt"
-	"github.com/go-park-mail-ru/2023_2_Rabotyagi/pkg/mylogger"
 	"math"
 	"math/big"
+	"strconv"
 )
 
 type keyCtx string
@@ -20,7 +19,7 @@ func SetRequestIDToCtx(ctx context.Context, requestID string) context.Context {
 }
 
 func AddRequestIDToCtx(ctx context.Context) (context.Context, error) {
-	logger, err := mylogger.Get()
+	logger, err := Get()
 	if err != nil {
 		return nil, err
 	}
@@ -32,7 +31,7 @@ func AddRequestIDToCtx(ctx context.Context) (context.Context, error) {
 		return nil, err
 	}
 
-	requestID := fmt.Sprintf("%d", bigInt.Int64())
+	requestID := strconv.FormatInt(bigInt.Int64(), 10)
 
 	return SetRequestIDToCtx(ctx, requestID), nil
 }

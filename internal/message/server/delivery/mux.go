@@ -2,7 +2,6 @@ package delivery
 
 import (
 	"context"
-	"github.com/google/uuid"
 	"net/http"
 
 	// /docs - need for handler with swagger documentations
@@ -14,6 +13,7 @@ import (
 	mymiddleware "github.com/Vilinvil/task_messaggio/pkg/middleware"
 	"github.com/Vilinvil/task_messaggio/pkg/mylogger"
 	"github.com/go-park-mail-ru/2023_2_Rabotyagi/pkg/middleware"
+	"github.com/google/uuid"
 	httpSwagger "github.com/swaggo/http-swagger/v2"
 )
 
