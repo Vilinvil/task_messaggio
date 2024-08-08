@@ -10,6 +10,8 @@ import (
 	"github.com/Vilinvil/task_messaggio/internal/messageworker/messageworker/usecases"
 	"github.com/Vilinvil/task_messaggio/pkg/models"
 	"github.com/Vilinvil/task_messaggio/pkg/mylogger"
+
+	pkgrepository "github.com/go-park-mail-ru/2023_2_Rabotyagi/pkg/repository"
 )
 
 var _ MessageWorker = (*usecases.MessageWorker)(nil)
@@ -49,10 +51,14 @@ func (s *Server) Run(ctx context.Context, config *config.Config) error {
 		return err
 	}
 
-	messageRepository, err := repository.NewMessagePg(ctx, config.URLDataBase, logger)
+	pool, err := pkgrepository.NewPgxPool(ctx, config.URLDataBase)
 	if err != nil {
+		logger.Error(err)
+
 		return err
 	}
+
+	messageRepository := repository.NewMessagePg(pool, logger)
 
 	messageWorker := usecases.NewMessageWorker(brokerMessageKafka, messageRepository, logger)
 
