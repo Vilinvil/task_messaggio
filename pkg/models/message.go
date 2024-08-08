@@ -20,6 +20,13 @@ var ErrLenMessage = myerrors.NewBadRequestError("Длина сообщения �
 
 type GeneratorUUID func() uuid.UUID
 
+var (
+	DummyUUID          = uuid.MustParse("52fdfc07-2182-454f-963f-5f0f9a621d72") //nolint:gochecknoglobals
+	DummyGeneratorUUID = func() uuid.UUID {                                     //nolint:gochecknoglobals
+		return DummyUUID
+	}
+)
+
 type MessagePayload struct {
 	ID    uuid.UUID
 	Value string

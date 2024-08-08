@@ -15,8 +15,7 @@ import (
 var _ MessageWorker = (*usecases.MessageWorker)(nil)
 
 type MessageWorker interface {
-	JobMessages(ctx context.Context, handlerFunc func(ctx context.Context, payload *models.MessagePayload,
-	) error) <-chan error
+	JobMessages(ctx context.Context, handlerFunc usecases.MessagePayloadHandler) <-chan error
 }
 
 func NewSleepingHandler(durationSleep time.Duration) func(ctx context.Context, payload *models.MessagePayload) error {

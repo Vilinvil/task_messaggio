@@ -15,13 +15,6 @@ import (
 	"go.uber.org/mock/gomock"
 )
 
-var (
-	testUUID          = uuid.MustParse("52fdfc07-2182-454f-963f-5f0f9a621d72") //nolint:gochecknoglobals
-	testGeneratorUUID = func() uuid.UUID {                                     //nolint:gochecknoglobals
-		return testUUID
-	}
-)
-
 func NewMessageService(ctrl *gomock.Controller,
 	behaviorMessageRepository func(m *mocks.MockMessageRepository),
 	behaviorBrokerMessageRepository func(m *mocks.MockBrokerMessageRepository),
@@ -33,7 +26,7 @@ func NewMessageService(ctrl *gomock.Controller,
 	behaviorMessageRepository(mockMessageRepository)
 	behaviorBrokerMessageRepository(mockBrokerMessageRepository)
 
-	return usecases.NewMessageService(mockMessageRepository, mockBrokerMessageRepository, testGeneratorUUID, logger)
+	return usecases.NewMessageService(mockMessageRepository, mockBrokerMessageRepository, models.DummyGeneratorUUID, logger)
 }
 
 func TestAddMessage(t *testing.T) {
@@ -58,17 +51,17 @@ func TestAddMessage(t *testing.T) {
 			inputValue: "basic message",
 			behaviorMessageRepository: func(m *mocks.MockMessageRepository) {
 				m.EXPECT().AddMessage(gomock.Any(), &models.MessagePayload{
-					ID:    testUUID,
+					ID:    models.DummyUUID,
 					Value: "basic message",
 				})
 			},
 			behaviorBrokerMessageRepository: func(m *mocks.MockBrokerMessageRepository) {
 				m.EXPECT().WriteMessage(gomock.Any(), &models.MessagePayload{
-					ID:    testUUID,
+					ID:    models.DummyUUID,
 					Value: "basic message",
 				})
 			},
-			expectedResponse: testUUID,
+			expectedResponse: models.DummyUUID,
 			expectedErr:      nil,
 		},
 		{
@@ -88,7 +81,7 @@ func TestAddMessage(t *testing.T) {
 			inputValue: "basic message",
 			behaviorMessageRepository: func(m *mocks.MockMessageRepository) {
 				m.EXPECT().AddMessage(gomock.Any(), &models.MessagePayload{
-					ID:    testUUID,
+					ID:    models.DummyUUID,
 					Value: "basic message",
 				}).Return(errTestInternal)
 			},
@@ -104,13 +97,13 @@ func TestAddMessage(t *testing.T) {
 			inputValue: "basic message",
 			behaviorMessageRepository: func(m *mocks.MockMessageRepository) {
 				m.EXPECT().AddMessage(gomock.Any(), &models.MessagePayload{
-					ID:    testUUID,
+					ID:    models.DummyUUID,
 					Value: "basic message",
 				}).Return(nil)
 			},
 			behaviorBrokerMessageRepository: func(m *mocks.MockBrokerMessageRepository) {
 				m.EXPECT().WriteMessage(gomock.Any(), &models.MessagePayload{
-					ID:    testUUID,
+					ID:    models.DummyUUID,
 					Value: "basic message",
 				}).Return(errTestInternal)
 			},

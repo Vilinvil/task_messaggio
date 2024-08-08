@@ -7,6 +7,7 @@ import (
 	"github.com/Vilinvil/task_messaggio/internal/messageworker/messageworker/repository"
 	"github.com/Vilinvil/task_messaggio/pkg/models"
 	"github.com/Vilinvil/task_messaggio/pkg/mylogger"
+
 	"github.com/google/uuid"
 )
 
@@ -24,6 +25,8 @@ var _ MessageRepository = (*repository.MessagePg)(nil)
 type MessageRepository interface {
 	SetStatusMessage(ctx context.Context, messageID *uuid.UUID, status repository.StatusMessage) error
 }
+
+type MessagePayloadHandler func(ctx context.Context, payload *models.MessagePayload) error
 
 type MessageWorker struct {
 	messageRepository MessageRepository
@@ -47,7 +50,7 @@ func NewMessageWorker(brokerMessage BrokerMessage, messageRepository MessageRepo
 // JobMessages one time starts job with messages. At the next call of this method only returning
 // existing channel happens.
 func (s *MessageWorker) JobMessages(ctx context.Context,
-	handlerFunc func(ctx context.Context, payload *models.MessagePayload) error,
+	handlerFunc MessagePayloadHandler,
 ) <-chan error {
 	if s.chErr != nil {
 		return s.chErr
@@ -60,6 +63,8 @@ func (s *MessageWorker) JobMessages(ctx context.Context,
 	s.onceChErr.Do(func() {
 		go func() {
 			s.chErr = make(chan error)
+
+			defer close(s.chErr)
 
 			wgCreationChErr.Done()
 
