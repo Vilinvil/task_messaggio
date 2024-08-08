@@ -30,7 +30,8 @@ cp-env:
 test:
 	mkdir -p bin
 	 go test --race -coverpkg=./... -coverprofile=bin/cover.out ./... \
- 	 && cat bin/cover.out | grep -v "mocks" | grep -v "easyjson" > bin/pure_cover.out \
+ 	 && cat bin/cover.out | grep -v "mocks" | grep -v "easyjson" | grep -v "kafka" | grep -v "cmd" | \
+ 	 grep -v "docs.go" | grep -v "test_comparaison.go"  | grep -v "server" > bin/pure_cover.out \
   	 && go tool cover -html=bin/pure_cover.out -o=bin/cover.html \
   	 && go tool cover --func bin/pure_cover.out
 
