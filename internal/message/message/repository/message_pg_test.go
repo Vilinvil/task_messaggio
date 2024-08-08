@@ -9,7 +9,6 @@ import (
 	"github.com/Vilinvil/task_messaggio/pkg/models"
 	"github.com/Vilinvil/task_messaggio/pkg/mylogger"
 	"github.com/Vilinvil/task_messaggio/pkg/utils"
-
 	"github.com/jackc/pgx/v5"
 	"github.com/pashagolub/pgxmock/v3"
 )

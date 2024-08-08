@@ -3,13 +3,14 @@ package repository_test
 import (
 	"context"
 	"fmt"
+	"testing"
+
 	"github.com/Vilinvil/task_messaggio/internal/messageworker/messageworker/repository"
 	"github.com/Vilinvil/task_messaggio/pkg/models"
 	"github.com/Vilinvil/task_messaggio/pkg/mylogger"
 	"github.com/Vilinvil/task_messaggio/pkg/utils"
 	"github.com/google/uuid"
 	"github.com/pashagolub/pgxmock/v3"
-	"testing"
 )
 
 func TestSetStatusMessage(t *testing.T) {

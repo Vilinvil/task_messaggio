@@ -4,11 +4,12 @@ import (
 	"context"
 	"crypto/rand"
 	"fmt"
-	"github.com/Vilinvil/task_messaggio/pkg/mylogger"
-	"github.com/Vilinvil/task_messaggio/pkg/utils"
 	"strconv"
 	"testing"
 	"testing/iotest"
+
+	"github.com/Vilinvil/task_messaggio/pkg/mylogger"
+	"github.com/Vilinvil/task_messaggio/pkg/utils"
 )
 
 func TestAddRequestIDToCtx(t *testing.T) {
@@ -38,7 +39,7 @@ func TestAddRequestIDToCtx(t *testing.T) {
 	}
 }
 
-func TestAddRequestErrNoLogger(t *testing.T) {
+func TestAddRequestErrNoLogger(t *testing.T) { //nolint:paralleltest
 	baseCtx := context.Background()
 
 	ctxWithRequestID, err := mylogger.AddRequestIDToCtx(baseCtx, rand.Reader)

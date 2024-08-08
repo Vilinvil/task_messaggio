@@ -3,13 +3,13 @@ package usecases_test
 import (
 	"context"
 	"fmt"
-	"github.com/Vilinvil/task_messaggio/pkg/utils"
 	"testing"
 
 	"github.com/Vilinvil/task_messaggio/internal/message/message/mocks"
 	"github.com/Vilinvil/task_messaggio/internal/message/message/usecases"
 	"github.com/Vilinvil/task_messaggio/pkg/models"
 	"github.com/Vilinvil/task_messaggio/pkg/mylogger"
+	"github.com/Vilinvil/task_messaggio/pkg/utils"
 	"github.com/google/uuid"
 	"go.uber.org/mock/gomock"
 )

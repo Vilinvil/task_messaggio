@@ -2,8 +2,8 @@ package repository
 
 import (
 	"context"
-	"github.com/Vilinvil/task_messaggio/pkg/dbpool"
 
+	"github.com/Vilinvil/task_messaggio/pkg/dbpool"
 	"github.com/Vilinvil/task_messaggio/pkg/mylogger"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"

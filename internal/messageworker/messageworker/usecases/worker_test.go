@@ -3,7 +3,6 @@ package usecases_test
 import (
 	"context"
 	"fmt"
-	"github.com/Vilinvil/task_messaggio/pkg/utils"
 	"sync"
 	"testing"
 
@@ -12,6 +11,7 @@ import (
 	"github.com/Vilinvil/task_messaggio/internal/messageworker/messageworker/usecases"
 	"github.com/Vilinvil/task_messaggio/pkg/models"
 	"github.com/Vilinvil/task_messaggio/pkg/mylogger"
+	"github.com/Vilinvil/task_messaggio/pkg/utils"
 	"go.uber.org/mock/gomock"
 )
 
