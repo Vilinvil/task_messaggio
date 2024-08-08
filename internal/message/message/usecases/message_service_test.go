@@ -2,8 +2,8 @@ package usecases_test
 
 import (
 	"context"
-	"errors"
 	"fmt"
+	"github.com/Vilinvil/task_messaggio/pkg/utils"
 	"testing"
 
 	"github.com/Vilinvil/task_messaggio/internal/message/message/mocks"
@@ -128,14 +128,9 @@ func TestAddMessage(t *testing.T) {
 
 			receivedResponse, err := messageService.AddMessage(ctx, testCase.inputValue)
 
-			if receivedResponse != testCase.expectedResponse {
-				t.Errorf("receivedResponse: %v NOT EQUAL expectedResponse: %v ",
-					receivedResponse, testCase.expectedResponse)
-			}
+			utils.PlainEqual(t, receivedResponse, testCase.expectedResponse)
 
-			if !errors.Is(err, testCase.expectedErr) {
-				t.Errorf("receivedErr: %v NOT EQUAL expectedErr: %v", err, testCase.expectedErr)
-			}
+			utils.EqualErrors(t, err, testCase.expectedErr)
 		})
 	}
 }

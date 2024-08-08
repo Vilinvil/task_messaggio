@@ -68,7 +68,3 @@ func (m *MessageService) AddMessage(ctx context.Context, value string) (uuid.UUI
 func (m *MessageService) GetMessageStatistic(ctx context.Context) (*models.MessageStatistic, error) {
 	return m.messageRepository.GetMessageStatistic(ctx)
 }
-
-func (m *MessageService) WriteMessage(ctx context.Context, msgPayload *models.MessagePayload) error {
-	return m.brokerMessageRepository.WriteMessage(ctx, msgPayload)
-}

@@ -2,8 +2,8 @@ package usecases_test
 
 import (
 	"context"
-	"errors"
 	"fmt"
+	"github.com/Vilinvil/task_messaggio/pkg/utils"
 	"sync"
 	"testing"
 
@@ -67,9 +67,9 @@ func TestJobMessageErrWhenHandleConsumedMessage(t *testing.T) {
 		},
 	}
 
-	if receivedErr := <-chErr; !errors.Is(receivedErr, expectedErr) {
-		t.Errorf("Not equal receivedeErr: %s expectedErr: %s", receivedErr.Error(), expectedErr.Error())
-	}
+	receivedErr := <-chErr
+
+	utils.EqualErrors(t, expectedErr, receivedErr)
 }
 
 func TestJobMessageErrMessageRepositorySetStatusMessage(t *testing.T) {
@@ -113,9 +113,9 @@ func TestJobMessageErrMessageRepositorySetStatusMessage(t *testing.T) {
 		},
 	}
 
-	if receivedErr := <-chErr; !errors.Is(receivedErr, expectedErr) {
-		t.Errorf("Not equal receivedeErr: %v expectedErr: %v", receivedErr, expectedErr)
-	}
+	receivedErr := <-chErr
+
+	utils.EqualErrors(t, expectedErr, receivedErr)
 }
 
 func TestJobMessageErrCommitFunc(t *testing.T) {
@@ -156,9 +156,9 @@ func TestJobMessageErrCommitFunc(t *testing.T) {
 
 	chConsumptionMessages <- msgPayloadWithCommitFunc
 
-	if receivedErr := <-chErr; !errors.Is(receivedErr, expectedErr) {
-		t.Errorf("Not equal receivedeErr: %v expectedErr: %v", receivedErr, expectedErr)
-	}
+	receivedErr := <-chErr
+
+	utils.EqualErrors(t, expectedErr, receivedErr)
 }
 
 func TestJobMessageErrInChErrConsumptionMessage(t *testing.T) {
@@ -192,9 +192,9 @@ func TestJobMessageErrInChErrConsumptionMessage(t *testing.T) {
 	close(chConsumptionMessages)
 	chErrConsumptionMessage <- expectedErr
 
-	if receivedErr := <-chErr; !errors.Is(receivedErr, expectedErr) {
-		t.Errorf("Not equal receivedeErr: %v expectedErr: %v", receivedErr, expectedErr)
-	}
+	receivedErr := <-chErr
+
+	utils.EqualErrors(t, expectedErr, receivedErr)
 }
 
 func multipleWriteInChConsumptionMessage(
@@ -249,9 +249,9 @@ func TestJobMessageMultipleWriteInConsumption(t *testing.T) {
 
 	chErrConsumptionMessage <- nil
 
-	if receivedErr := <-chErr; !errors.Is(receivedErr, nil) {
-		t.Errorf("Not equal receivedeErr: %v expected: nil", receivedErr)
-	}
+	receivedErr := <-chErr
+
+	utils.EqualErrors(t, nil, receivedErr)
 }
 
 func multipleCallJobMessage(amountCall int, messageWorker *usecases.MessageWorker) error {
@@ -311,7 +311,6 @@ func TestJobMessageMultipleCallJobMessage(t *testing.T) {
 	messageWorker := NewMessageWorker(ctrl, behaviorMessageRepository, behaviorBrokerMessage, nopLogger)
 
 	receivedErr := multipleCallJobMessage(amountCallJobMessage, messageWorker)
-	if receivedErr != nil {
-		t.Errorf("receivedErr not equal nil: %v", receivedErr)
-	}
+
+	utils.EqualErrors(t, nil, receivedErr)
 }

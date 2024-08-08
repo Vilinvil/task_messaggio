@@ -13,6 +13,7 @@ import (
 	mymiddleware "github.com/Vilinvil/task_messaggio/pkg/middleware"
 	"github.com/Vilinvil/task_messaggio/pkg/mylogger"
 	"github.com/go-park-mail-ru/2023_2_Rabotyagi/pkg/middleware"
+	pkgrepository "github.com/go-park-mail-ru/2023_2_Rabotyagi/pkg/repository"
 	"github.com/google/uuid"
 	httpSwagger "github.com/swaggo/http-swagger/v2"
 )
@@ -20,10 +21,14 @@ import (
 func NewMux(ctx context.Context, urlDataBase, brokerAddr string, logger *mylogger.MyLogger) (http.Handler, error) {
 	router := http.NewServeMux()
 
-	messagePg, err := repository.NewMessagePg(ctx, urlDataBase, logger)
+	pool, err := pkgrepository.NewPgxPool(ctx, urlDataBase)
 	if err != nil {
+		logger.Error(err)
+
 		return nil, err
 	}
+
+	messagePg := repository.NewMessagePg(pool, logger)
 
 	brokerMessage, err := repository.NewBrokerMessageKafka(brokerAddr, logger)
 	if err != nil {
