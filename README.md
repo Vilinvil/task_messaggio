@@ -4,6 +4,9 @@
 
 Условия задания лежат [в файле](task.md)
 
+Дополнения после срока лежат в ветке dev-after-01.08. Добавил unit тестов с покрытием 73.2% и по пути починил несколько
+багов. Для проверки можно перейти в ветку dev-after-01.08 и выполнить [команду](#прогон-unit-тестов) 
+
 Решение представляет собой документацию swagger, доступную в интернете по ссылке:
 https://goods-galaxy.ru:7443/api/v1/swagger/index.html
 
@@ -126,6 +129,11 @@ messageworker-1  | {"level":"info","ts":1722542762.258721,"caller":"server/serve
 
 ## Команды для разработки
 
+### Прогон unit тестов
+```bash
+make test
+```
+
 ### Установка утилиты для накатки миграций
 ```bash
 go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@v4.17.1
@@ -144,4 +152,9 @@ go get github.com/mailru/easyjson && go install github.com/mailru/easyjson/...@v
 ### Установка утилиты для генерации документации к api
 ```bash
 go install github.com/swaggo/swag/cmd/swag@v1.16.3
+```
+
+### Установка утилиты для генерации mock-ов 
+```bash
+go install go.uber.org/mock/mockgen@v0.4.0
 ```

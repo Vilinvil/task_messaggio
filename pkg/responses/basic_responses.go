@@ -17,8 +17,10 @@ type Response interface {
 	Status() int
 }
 
+const BaseContentType = "application/json"
+
 func SendResponse(w http.ResponseWriter, logger *mylogger.MyLogger, response Response) {
-	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Content-Type", BaseContentType)
 
 	responseSend, err := response.MarshalJSON()
 	if err != nil {

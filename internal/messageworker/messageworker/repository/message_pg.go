@@ -3,36 +3,29 @@ package repository
 import (
 	"context"
 
+	"github.com/Vilinvil/task_messaggio/pkg/dbpool"
 	"github.com/Vilinvil/task_messaggio/pkg/mylogger"
-	"github.com/go-park-mail-ru/2023_2_Rabotyagi/pkg/repository"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
-	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 const (
-	StatusMessageDone StatusMessage = "done"
+	StatusMessagePending StatusMessage = "pending"
+	StatusMessageDone    StatusMessage = "done"
 )
 
 type StatusMessage string
 
 type MessagePg struct {
-	pool   *pgxpool.Pool
+	pool   dbpool.PgxPool
 	logger *mylogger.MyLogger
 }
 
-func NewMessagePg(ctx context.Context, urlDataBase string, logger *mylogger.MyLogger) (*MessagePg, error) {
-	pool, err := repository.NewPgxPool(ctx, urlDataBase)
-	if err != nil {
-		logger.Error(err)
-
-		return nil, err
-	}
-
+func NewMessagePg(pool dbpool.PgxPool, logger *mylogger.MyLogger) *MessagePg {
 	return &MessagePg{
 		pool:   pool,
 		logger: logger,
-	}, nil
+	}
 }
 
 func (m *MessagePg) updateStatus(ctx context.Context, tx pgx.Tx, messageID *uuid.UUID, status StatusMessage) error {

@@ -2,7 +2,10 @@ package mylogger
 
 import (
 	"context"
-	"math/rand"
+	"crypto/rand"
+	"io"
+	"math"
+	"math/big"
 	"strconv"
 )
 
@@ -13,15 +16,25 @@ const (
 )
 
 func SetRequestIDToCtx(ctx context.Context, requestID string) context.Context {
-	ctx = context.WithValue(ctx, requestIDKey, requestID)
-
-	return ctx
+	return context.WithValue(ctx, requestIDKey, requestID)
 }
 
-func AddRequestIDToCtx(ctx context.Context) context.Context {
-	requestID := strconv.Itoa(rand.Int()) //nolint:gosec
+func AddRequestIDToCtx(ctx context.Context, readerRandom io.Reader) (context.Context, error) {
+	logger, err := Get()
+	if err != nil {
+		return nil, err
+	}
 
-	return SetRequestIDToCtx(ctx, requestID)
+	bigInt, err := rand.Int(readerRandom, big.NewInt(math.MaxInt))
+	if err != nil {
+		logger.Error(err)
+
+		return nil, err
+	}
+
+	requestID := strconv.FormatInt(bigInt.Int64(), 10)
+
+	return SetRequestIDToCtx(ctx, requestID), nil
 }
 
 func GetRequestIDFromCtx(ctx context.Context) string {

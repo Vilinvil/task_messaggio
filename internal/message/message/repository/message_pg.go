@@ -3,30 +3,22 @@ package repository
 import (
 	"context"
 
+	"github.com/Vilinvil/task_messaggio/pkg/dbpool"
 	"github.com/Vilinvil/task_messaggio/pkg/models"
 	"github.com/Vilinvil/task_messaggio/pkg/mylogger"
-	"github.com/go-park-mail-ru/2023_2_Rabotyagi/pkg/repository"
 	"github.com/jackc/pgx/v5"
-	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type MessagePg struct {
-	pool   *pgxpool.Pool
+	pool   dbpool.PgxPool
 	logger *mylogger.MyLogger
 }
 
-func NewMessagePg(ctx context.Context, urlDataBase string, logger *mylogger.MyLogger) (*MessagePg, error) {
-	pool, err := repository.NewPgxPool(ctx, urlDataBase)
-	if err != nil {
-		logger.Error(err)
-
-		return nil, err
-	}
-
+func NewMessagePg(pgxPool dbpool.PgxPool, logger *mylogger.MyLogger) *MessagePg {
 	return &MessagePg{
-		pool:   pool,
+		pool:   pgxPool,
 		logger: logger,
-	}, nil
+	}
 }
 
 func (m *MessagePg) insertMessage(ctx context.Context, tx pgx.Tx, preMessage *models.MessagePayload) error {

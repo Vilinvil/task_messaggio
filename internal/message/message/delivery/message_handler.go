@@ -2,12 +2,14 @@ package delivery
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"net/http"
 	"net/url"
 
 	"github.com/Vilinvil/task_messaggio/internal/message/message/usecases"
 	"github.com/Vilinvil/task_messaggio/pkg/models"
+	"github.com/Vilinvil/task_messaggio/pkg/myerrors"
 	"github.com/Vilinvil/task_messaggio/pkg/mylogger"
 	"github.com/Vilinvil/task_messaggio/pkg/responses"
 	"github.com/google/uuid"
@@ -34,8 +36,12 @@ func NewMessageHandler(service MessageService,
 	}
 }
 
-var ResponseMessageAddSuccessful = responses.NewResponseSuccessful( //nolint:gochecknoglobals
-	"Сообщение успешно добавлено")
+var (
+	ResponseMessageAddSuccessful = responses.NewResponseSuccessful( //nolint:gochecknoglobals
+		"Сообщение успешно добавлено")
+	ErrBadFormatMessage = myerrors.NewBadRequestError("Не правильный формат сообщения в x-www-form-urlencoded" +
+		" за любым % должно следовать два шестнадцатеричных символа")
+)
 
 // AddMessage godoc
 //
@@ -65,6 +71,7 @@ func (m *MessageHandler) AddMessage(w http.ResponseWriter, r *http.Request) {
 
 	valueMessage, err := url.QueryUnescape(string(rawValueMessage))
 	if err != nil {
+		err = fmt.Errorf("%w in segment: %s", ErrBadFormatMessage, err.Error())
 		logger.Error(err)
 		responses.SendErrResponse(w, logger, err)
 
