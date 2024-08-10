@@ -138,11 +138,19 @@ linters-settings:
           - "github.com/google/uuid"
           - "github.com/jackc/pgx/v5"
           - "github.com/jackc/pgx/v5/pgxpool"
+          - "github.com/jackc/pgx/v5/pgconn"
+          - "github.com/pashagolub/pgxmock/v3"
           - "github.com/swaggo/http-swagger/v2"
           - "github.com/segmentio/kafka-go"
         deny:
           - pkg: "github.com/pkg/errors"
             desc: Should be replaced by standard lib errors package
+          - pkg: "github.com/go-park-mail-ru/2023_2_Rabotyagi/pkg/mylogger"
+            desc: This project have own package for similar purpose
+          - pkg: "github.com/go-park-mail-ru/2023_2_Rabotyagi/pkg/myerrors"
+            desc: This project have own package for similar purpose
+          - pkg: "github.com/go-park-mail-ru/2023_2_Rabotyagi/pkg/responses"
+            desc: This project have own package for similar purpose
   tagliatelle:
     case:
       use-field-name: true
@@ -156,3 +164,9 @@ linters-settings:
       - w http.ResponseWriter
       - r *http.Request
       - r io.Reader
+
+issues:
+  exclude-rules:
+    - path: _test.go
+      linters:
+        - funlen

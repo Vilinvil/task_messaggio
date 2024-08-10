@@ -4,12 +4,6 @@
 
 Условия задания лежат [в файле](task.md)
 
-Дополнения после срока лежат в ветке dev-after-01.08. Добавил unit тестов с покрытием 73.2% и по пути починил несколько
-багов. Для проверки можно перейти в ветку dev-after-01.08 и выполнить make test.
-```bash
-git checkout dev-after-01-08 && make test
-```
-
 Решение представляет собой документацию swagger, доступную в интернете по ссылке:
 https://goods-galaxy.ru:7443/api/v1/swagger/index.html
 
@@ -22,6 +16,8 @@ https://goods-galaxy.ru:7443/api/v1/swagger/index.html
 увеличилось, а обработанных нет. Обработчик внутри кода обрабатывает сообщения последовательно
 (в качестве симуляции спит 5сек), и секунд через 15 можно проверить статистику по /message/statistic и заметить,
 что кол-во обработанных сообщений сравнялось с общим кол-вом.
+
+Покрытие unit тестов: 73.2% Для проверки можно выполнить [команду](#прогон-unit-тестов) 
 
 ## Для удаленного развертывания
 Здесь используется https для доступа из интернета, поэтому понадобится сертификаты, для
@@ -132,6 +128,11 @@ messageworker-1  | {"level":"info","ts":1722542762.258721,"caller":"server/serve
 
 ## Команды для разработки
 
+### Прогон unit тестов
+```bash
+make test
+```
+
 ### Установка утилиты для накатки миграций
 ```bash
 go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@v4.17.1
@@ -150,4 +151,9 @@ go get github.com/mailru/easyjson && go install github.com/mailru/easyjson/...@v
 ### Установка утилиты для генерации документации к api
 ```bash
 go install github.com/swaggo/swag/cmd/swag@v1.16.3
+```
+
+### Установка утилиты для генерации mock-ов 
+```bash
+go install go.uber.org/mock/mockgen@v0.4.0
 ```
