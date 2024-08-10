@@ -7,12 +7,14 @@ import (
 	"math"
 	"math/big"
 	"strconv"
+
+	"google.golang.org/grpc/metadata"
 )
 
 type keyCtx string
 
 const (
-	requestIDKey keyCtx = "requestIDKey"
+	requestIDKey keyCtx = "request_id_key"
 )
 
 func SetRequestIDToCtx(ctx context.Context, requestID string) context.Context {
@@ -44,4 +46,17 @@ func GetRequestIDFromCtx(ctx context.Context) string {
 	}
 
 	return requestID
+}
+
+func NewMDFromRequestIDCtx(ctx context.Context) metadata.MD {
+	return metadata.Pairs(string(requestIDKey), GetRequestIDFromCtx(ctx))
+}
+
+func GetRequestIDFromMDCtx(ctx context.Context) string {
+	slStr := metadata.ValueFromIncomingContext(ctx, string(requestIDKey))
+	if len(slStr) < 1 {
+		return ""
+	}
+
+	return slStr[0]
 }

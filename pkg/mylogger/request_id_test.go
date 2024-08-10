@@ -8,8 +8,13 @@ import (
 	"testing"
 	"testing/iotest"
 
+	"google.golang.org/grpc/metadata"
+
+	"google.golang.org/grpc/metadata"
+
 	"github.com/Vilinvil/task_messaggio/pkg/mylogger"
 	"github.com/Vilinvil/task_messaggio/pkg/utils"
+	"google.golang.org/grpc/metadata"
 )
 
 func TestAddRequestIDToCtx(t *testing.T) {
@@ -61,4 +66,18 @@ func TestAddRequestErrRandReader(t *testing.T) {
 	ctxWithReqestID, err := mylogger.AddRequestIDToCtx(baseCtx, errReader)
 	utils.EqualErrors(t, errInternalReader, err)
 	utils.PlainEqual(t, nil, ctxWithReqestID)
+}
+
+func TestGetRequestIDFromMDCtx(t *testing.T) {
+	t.Parallel()
+
+	baseCtx := context.Background()
+	ctxWithoutReqID := baseCtx
+
+	expectedReqID := "1234_test_req_id"
+	ctxWithReqID := metadata.NewIncomingContext(baseCtx,
+		mylogger.NewMDFromRequestIDCtx(mylogger.SetRequestIDToCtx(baseCtx, expectedReqID)))
+
+	utils.PlainEqual(t, "", mylogger.GetRequestIDFromMDCtx(ctxWithoutReqID))
+	utils.PlainEqual(t, expectedReqID, mylogger.GetRequestIDFromMDCtx(ctxWithReqID))
 }
