@@ -1,6 +1,10 @@
 package myerrors
 
-import "net/http"
+import (
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+	"net/http"
+)
 
 var ErrInternalServer = NewInternalServerError("Внутренняя ошибка на сервере")
 
@@ -10,16 +14,16 @@ type Error struct {
 	status int
 }
 
-func New(err string, status int) *Error {
+func New(status int, err string) *Error {
 	return &Error{Err: err, status: status}
 }
 
 func NewBadRequestError(err string) *Error {
-	return New(err, http.StatusBadRequest)
+	return New(http.StatusBadRequest, err)
 }
 
 func NewInternalServerError(err string) *Error {
-	return New(err, http.StatusInternalServerError)
+	return New(http.StatusInternalServerError, err)
 }
 
 func (e *Error) Error() string {
@@ -32,4 +36,15 @@ func (e *Error) Status() int {
 
 func (e *Error) IsClientError() bool {
 	return e.status >= http.StatusBadRequest && e.status < http.StatusInternalServerError
+}
+
+func (e *Error) ConvertToGRPC() error {
+	switch e.status {
+	case http.StatusBadRequest:
+		return status.Error(codes.InvalidArgument, e.Err)
+	case http.StatusNotFound:
+		return status.Error(codes.NotFound, e.Err)
+	default:
+		return status.Error(codes.Internal, e.Err)
+	}
 }

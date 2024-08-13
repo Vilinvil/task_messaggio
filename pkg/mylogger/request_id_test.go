@@ -8,10 +8,6 @@ import (
 	"testing"
 	"testing/iotest"
 
-	"google.golang.org/grpc/metadata"
-
-	"google.golang.org/grpc/metadata"
-
 	"github.com/Vilinvil/task_messaggio/pkg/mylogger"
 	"github.com/Vilinvil/task_messaggio/pkg/utils"
 	"google.golang.org/grpc/metadata"
