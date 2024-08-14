@@ -16,7 +16,7 @@ func EqualErrors(t *testing.T, expectedErr, receivedErr error) {
 	}
 }
 
-func PlainEqual(t *testing.T, expected, received any) {
+func PlainEqual[T comparable](t *testing.T, expected, received T) {
 	t.Helper()
 
 	if expected != received {
