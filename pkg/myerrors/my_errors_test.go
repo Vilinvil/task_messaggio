@@ -1,12 +1,13 @@
 package myerrors_test
 
 import (
+	"net/http"
+	"testing"
+
 	"github.com/Vilinvil/task_messaggio/pkg/myerrors"
 	"github.com/Vilinvil/task_messaggio/pkg/utils"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"net/http"
-	"testing"
 )
 
 func TestError_ConvertToGRPC(t *testing.T) {

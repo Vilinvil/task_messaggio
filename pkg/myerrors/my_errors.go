@@ -1,9 +1,10 @@
 package myerrors
 
 import (
+	"net/http"
+
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"net/http"
 )
 
 var ErrInternalServer = NewInternalServerError("Внутренняя ошибка на сервере")

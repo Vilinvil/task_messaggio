@@ -17,7 +17,6 @@ linters:
     - errchkjson
     - errname
     - errorlint
-    - execinquery
     - exhaustive
     - exhaustruct
     - exportloopref
@@ -33,12 +32,12 @@ linters:
     - gocritic
     - gocyclo
     - godox
-    - goerr113
+    - err113
     - gofmt
     - gofumpt
     - goheader
     - goimports
-    - gomnd
+    - mnd
     - gomoddirectives
     - gomodguard
     - goprintffuncname
@@ -96,16 +95,7 @@ linters:
 
   disable:
     - forbidigo
-    - exhaustivestruct
-    - deadcode
-    - golint
-    - varcheck
-    - scopelint
-    - structcheck
-    - interfacer
-    - nosnakecase
     - maligned
-    - ifshort
     - tagalign
     - godot
     - wrapcheck
@@ -151,6 +141,17 @@ linters-settings:
             desc: This project have own package for similar purpose
           - pkg: "github.com/go-park-mail-ru/2023_2_Rabotyagi/pkg/responses"
             desc: This project have own package for similar purpose
+  gci:
+    sections:
+      # Standard section: captures all standard packages.
+      - standard
+
+      # Current project section: contains all imports from current project
+      - prefix(github.com/Vilinvil/task_technology_echelon)
+
+      # Default section: contains all imports that could not be matched to another section type.
+      - default
+    custom-order: true
   tagliatelle:
     case:
       use-field-name: true
