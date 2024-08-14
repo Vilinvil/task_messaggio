@@ -29,7 +29,7 @@ func DeepEqual(t *testing.T, expected, received any) {
 	t.Helper()
 
 	if !reflect.DeepEqual(expected, received) {
-		t.Errorf("expected: %v NOT DEEP EQUAL received: %v",
+		t.Errorf("expected: %+v NOT DEEP EQUAL received: %+v",
 			expected, received)
 	}
 }
