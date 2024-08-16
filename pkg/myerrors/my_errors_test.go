@@ -33,12 +33,12 @@ func TestError_ConvertToGRPC(t *testing.T) {
 		{
 			name:        "err internal",
 			inputErr:    myerrors.NewInternalServerError("err internal"),
-			expectedErr: status.Error(codes.Internal, "err internal"),
+			expectedErr: status.Error(codes.Internal, myerrors.ErrInternalServer.Err),
 		},
 		{
 			name:        "unknown status err is internal err",
 			inputErr:    myerrors.New(999, "999 status err"),
-			expectedErr: status.Error(codes.Internal, "999 status err"),
+			expectedErr: status.Error(codes.Internal, myerrors.ErrInternalServer.Err),
 		},
 	}
 

@@ -46,6 +46,6 @@ func (e *Error) ConvertToGRPC() error {
 	case http.StatusNotFound:
 		return status.Error(codes.NotFound, e.Err)
 	default:
-		return status.Error(codes.Internal, e.Err)
+		return status.Error(codes.Internal, ErrInternalServer.Err)
 	}
 }
