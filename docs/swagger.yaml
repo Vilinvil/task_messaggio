@@ -9,7 +9,7 @@ definitions:
     type: object
   myerrors.Error:
     properties:
-      err:
+      reason:
         type: string
     type: object
   responses.ResponseSuccessful:
@@ -17,7 +17,7 @@ definitions:
       body:
         type: string
     type: object
-host: localhost:8090
+host: goods-galaxy.ru:7443
 info:
   contact:
     email: ivn-15-07@mail.ru

@@ -11,7 +11,7 @@ var ErrInternalServer = NewInternalServerError("Внутренняя ошибк�
 
 //easyjson:json
 type Error struct {
-	Err    string `json:"err"`
+	Err    string `json:"reason"` //nolint:tagliatelle
 	status int
 }
 
